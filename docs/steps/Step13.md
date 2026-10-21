@@ -65,11 +65,11 @@ export class CsvTokenizer {
 ## Podsumowanie i weryfikacja (Faza 3, Krok 13)
 
 ### [SOLID CHECK]
-- Zasada pojedynczej odpowiedzialności (SRP): Klasa `CsvTokenizer` skupia się wyłącznie na tokenizacji wierszy CSV, bez implementacji logiki zapisu, walidacji czy przetwarzania danych. Oddziela logikę tokenizacji od reszty aplikacji, co ułatwia testowanie i utrzymanie.
-- Odwrócenie zależności (DIP): Moduł `CsvTokenizer` może być używany przez różne komponenty aplikacji, które potrzebują tokenizacji CSV, bez wiązania się z konkretnymi implementacjami przetwarzania danych. Umożliwia to łatwe testowanie i wymianę implementacji tokenizacji w przyszłości.
+Zasada pojedynczej odpowiedzialności (SRP): Klasa CsvTokenizer skupia się wyłącznie na czystym algorytmie rozbijania linii tekstu CSV na tablicę tokenów (wartości), obsługując cudzysłowy oraz znaki ucieczki, całkowicie bez wiedzy o strukturze plików, parsowaniu całych dokumentów czy warstwie prezentacji.
+Odwrócenie zależności (DIP): Moduł stanowi samowystarczalny komponent logiki domenowej, który może być wstrzykiwany (lub używany bezpośrednio) przez parser CSV, nie zależąc od żadnych szczegółów infrastrukturalnych ani elementów I/O.
 
 ### [INTERFACE SUMMARY]
-- `CsvTokenizer`: Klasa odpowiedzialna za tokenizację pojedynczych linii tekstu CSV, obsługująca cudzysłowy, znaki ucieczki i różne separatory. Metoda `tokenizeLine` zwraca niemutowalną tablicę tokenów tekstowych, co zapewnia bezpieczeństwo i spójność danych w dalszym przetwarzaniu.
+- `CsvTokenizer`: Klasa implementująca metodę `tokenizeLine(line: string, delimiter?: string): ReadonlyArray<string>`, odpowiedzialną za poprawną obsługę cudzysłowów oraz znaków ucieczki ("").
 
 ### [REFACTORING ALERT]
-- Brak zastrzeżeń architektonicznych – klasa `CsvTokenizer` spełnia rygorystyczne wymagania TypeScript (strict: true), operuje na jednoznacznych typach bez użycia `any` i w pełni realizuje wzorzec Headless Architecture oraz zasady czystej architektury (Clean Architecture). Kod jest modularny, łatwy do testowania i utrzymania, a jego odpowiedzialność jest jasno określona.
+- Brak zastrzeżeń architektonicznych – algorytm działa w czasie $O(n)$, operuje na jawnych typach bez użycia typu any, zachowuje pełną niemutowalność zwracanych danych (ReadonlyArray<string>) i spełnia zasady Headless Architecture.
