@@ -58,7 +58,7 @@ csv-to-sql-converter/
 
 ### ⏳ Kolejne Fazy w Planie Budowy
 
-- [ ] **Faza 2: Warstwa Domeny – Modele i Kontrakty (Kroki 5–12)**
+- [x] **Faza 2: Warstwa Domeny – Modele i Kontrakty (Kroki 5–12)**
     - Definicja `SqlDataType`, modeli `ColumnDefinition`, `CsvRow`, `TableSchema` oraz interfejsów `ICsvParser`, `ITypeInferenceEngine`, `ISqlGenerator`, `ISqlFileRepository`.
 - [ ] **Faza 3: Warstwa Domeny – Silnik Parsowania CSV i Rozpoznawania Typów (Kroki 13–16)**
     - Implementacja `CsvTokenizer`, `CsvParser`, `TypeMatchers` oraz `TypeInferenceEngine`.
