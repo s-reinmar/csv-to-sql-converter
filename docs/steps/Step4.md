@@ -1,8 +1,10 @@
 # Krok 4 (public/resources/.gitkeep): Utworzenie struktury katalogów statycznych i docelowego miejsca zapisu wygenerowanych skryptów .sql.
 
-## PowerShell script to create the complete directory structure for csv-to-sql-converter
+## PowerShell 
+Skrypt PowerShell do utworzenia kompletnej struktury katalogów dla projektu `csv-to-sql-converter`:
 
-```text
+
+```powershell
 $directories = @(
 "csv-to-sql-converter/public/resources",
 "csv-to-sql-converter/src/domain/enums",
@@ -22,12 +24,12 @@ New-Item -ItemType Directory -Force -Path $dir | Out-Null
 }
 ```
 
-## Create .gitkeep in resources folder
+## Utwórz .gitkeep w katalogu resources
 
-```text
+```powershell
 New-Item -ItemType File -Force -Path "csv-to-sql-converter/public/resources/.gitkeep" | Out-Null
 Write-Host "Directory structure successfully created!" -ForegroundColor Green
 ```
 
-Polecenie powyższego skryptu PowerShell tworzy kompletną strukturę katalogów dla projektu `csv-to-sql-converter`, w tym katalog docelowy `public/resources`, w którym zostanie zapisany wygenerowany plik `.sql`. Dodatkowo, w katalogu `resources` tworzony jest plik `.gitkeep`, aby umożliwić śledzenie pustego katalogu w systemie kontroli wersji Git.
+Polecenie powyższego skryptu PowerShell tworzy kompletną strukturę katalogów dla projektu `csv-to-sql-converter`, w tym katalog docelowy `../../public/resources`, w którym zostanie zapisany wygenerowany plik `.sql`. Dodatkowo, w katalogu `resources` tworzony jest plik `.gitkeep`, aby umożliwić śledzenie pustego katalogu w systemie kontroli wersji Git.
 To kończy etap tworzenia struktury katalogów i przygotowania środowiska do dalszej implementacji aplikacji.

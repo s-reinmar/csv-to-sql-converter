@@ -1,6 +1,17 @@
 # CSV to SQL Converter (TypeScript)
 
 Aplikacja webowa w języku **TypeScript** służąca do konwersji plików wsadowych **CSV** do formatu SQL (`CREATE TABLE` + `INSERT INTO`). Narzędzie automatycznie rozpoznaje typy danych na podstawie zawartości kolumn, umożliwia ich ręczną korektę w interaktywnym formularzu oraz zapisuje wynikowy skrypt bezpośrednio w katalogu `public/resources/`.
+W tym projekcie zastosowano rygorystyczne typowanie TypeScript, wzorce projektowe **Clean Architecture**, **Domain-Driven Design (DDD)** oraz zasady **SOLID**.
+W szczególności, projekt realizuje następujące założenia:
+* **Headless Architecture:** Całkowite odseparowanie logiki domenowej i aplikacyjnej od warstwy widoku HTML DOM.
+* **Strict TypeScript:** Rygorystyczne typowanie (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, całkowity zakaz używania typu `any`).
+* **Interface-Driven Development (DIP):** Komunikacja pomiędzy warstwami odbywa się wyłącznie za pośrednictwem jawnych kontraktów (interfejsów).
+* **Niskie SLOC i SRP:** Podział logiki na małe, atomowe klasy i metody o pojedynczej odpowiedzialności.
+* **Ciemny motyw graficzny:** Interfejs użytkownika w kolorystyce czarno-niebieskiej z jasnoniebieskimi akcentami, zapewniający komfort pracy w warunkach słabego oświetlenia.
+* **Wersja 1.0.0:** Projekt jest w pełni funkcjonalny i gotowy do użycia w środowisku przeglądarkowym, z możliwością dalszej rozbudowy o dodatkowe funkcje i integracje.
+
+Specyfikacja zawarta w CODING_STANDARDS.md oraz w dokumentacji krok po kroku w katalogu `docs/steps/` opisuje szczegółowo proces implementacji, strukturę katalogów, interfejsy, modele danych oraz przypadki użycia, umożliwiając łatwe zrozumienie i rozwijanie projektu przez innych programistów.
+Dodatkowo opatrzone plikiem ROADMAP.md zawierają plan dalszego rozwoju projektu, w tym potencjalne funkcje i usprawnienia, które mogą zostać wprowadzone w kolejnych wersjach.
 
 ---
 
@@ -58,7 +69,7 @@ csv-to-sql-converter/
 
 ### ⏳ Kolejne Fazy w Planie Budowy
 
-- [x] **Faza 2: Warstwa Domeny – Modele i Kontrakty (Kroki 5–12)**
+- [⏳] **Faza 2: Warstwa Domeny – Modele i Kontrakty (Kroki 5–12)**
     - Definicja `SqlDataType`, modeli `ColumnDefinition`, `CsvRow`, `TableSchema` oraz interfejsów `ICsvParser`, `ITypeInferenceEngine`, `ISqlGenerator`, `ISqlFileRepository`.
 - [ ] **Faza 3: Warstwa Domeny – Silnik Parsowania CSV i Rozpoznawania Typów (Kroki 13–16)**
     - Implementacja `CsvTokenizer`, `CsvParser`, `TypeMatchers` oraz `TypeInferenceEngine`.

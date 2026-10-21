@@ -2,7 +2,7 @@
 
 Plan budowy aplikacji do konwersji plików CSV do formatu SQL w języku TypeScript został zaprojektowany w oparciu o architekturę czystą (Clean Architecture / Domain-Driven Design) oraz zasady SOLID. 
 
-Aby umożliwić interaktywny interfejs formularza (pozwalający na ręczną korektę rozpoznanych typów danych) oraz bezpośredni zapis wygenerowanego pliku na dysku w katalogu `public/resources/`, architektura zakłada lekki układ Klient-Serwer (lub środowisko z lokalnym backendem Node.js/Vite) z całkowitym odseparowaniem logiki domenowej od warstwy widoku HTML DOM (Headless Architecture). Podczas implementacji każdego kolejnego kroku kod będzie generowany zgodnie z protokołem weryfikacji (`[SOLID CHECK]`, `[INTERFACE SUMMARY]`, `[SOURCE CODE]`, `[REFACTORING ALERT]`), z rygorystycznym typowaniem (zakaz `any`) i zachowaniem limitów linii kodu (SLOC).
+Aby umożliwić interaktywny interfejs formularza (pozwalający na ręczną korektę rozpoznanych typów danych) oraz bezpośredni zapis wygenerowanego pliku na dysku w katalogu `../public/resources`, architektura zakłada lekki układ Klient-Serwer (lub środowisko z lokalnym backendem Node.js/Vite) z całkowitym odseparowaniem logiki domenowej od warstwy widoku HTML DOM (Headless Architecture). Podczas implementacji każdego kolejnego kroku kod będzie generowany zgodnie z protokołem weryfikacji (`[SOLID CHECK]`, `[INTERFACE SUMMARY]`, `[SOURCE CODE]`, `[REFACTORING ALERT]`), z rygorystycznym typowaniem (zakaz `any`) i zachowaniem limitów linii kodu (SLOC).
 
 ## Docelowa struktura katalogów projektu (WebStorm)
 
@@ -62,16 +62,16 @@ csv-to-sql-converter/
 ## Szczegółowy plan realizacji (Krok po kroku)
 
 ### Faza 1: Konfiguracja środowiska i projektu w WebStorm
-Celem tej fazy jest przygotowanie rygorystycznego środowiska TypeScript, które na poziomie kompilatora wymusza brak niejawnych typów `any` oraz przygotowuje obsługę zapisu do `public/resources/`.
-* **Krok 1 (`package.json`)**: Inicjalizacja projektu Node.js, konfiguracja skryptów uruchomieniowych oraz zależności deweloperskich (`typescript`, `vite`, `@types/node`).
-* **Krok 2 (`tsconfig.json`)**: Konfiguracja kompilatora TypeScript z włączonymi flagami rygorystycznymi (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, `noUnusedLocals: true`). 
-* **Krok 3 (`vite.config.ts`)**: Konfiguracja serwera deweloperskiego z dedykowanym middlewarem Node.js obsługującym lokalny endpoint zapisu plików bezpośrednio do folderu `public/resources/`.
-* **Krok 4 (`public/resources/.gitkeep`)**: Utworzenie struktury katalogów statycznych i docelowego miejsca zapisu wygenerowanych skryptów `.sql`.
+Celem tej fazy jest przygotowanie rygorystycznego środowiska TypeScript, które na poziomie kompilatora wymusza brak niejawnych typów `any` oraz przygotowuje obsługę zapisu do `../public/resources`.
+* **Krok 1 (`../package.json`)**: Inicjalizacja projektu Node.js, konfiguracja skryptów uruchomieniowych oraz zależności deweloperskich (`typescript`, `vite`, `@types/node`).
+* **Krok 2 (`../tsconfig.json`)**: Konfiguracja kompilatora TypeScript z włączonymi flagami rygorystycznymi (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, `noUnusedLocals: true`). 
+* **Krok 3 (`vite.config.ts`)**: Konfiguracja serwera deweloperskiego z dedykowanym middlewarem Node.js obsługującym lokalny endpoint zapisu plików bezpośrednio do folderu `../public/resources`.
+* **Krok 4 (`../public/resources/.gitkeep`)**: Utworzenie struktury katalogów statycznych i docelowego miejsca zapisu wygenerowanych skryptów `.sql`.
 
 ### Faza 2: Warstwa Domeny – Modele i Kontrakty (Interface-Driven Development)
 Zgodnie z zasadą odwrócenia zależności (DIP), przed napisaniem jakiejkolwiek logiki definiujemy czyste typy, wyliczenia oraz interfejsy. 
-* **Krok 5 (`src/domain/enums/SqlDataType.ts`)**: Definicja wspieranych typów danych SQL (`INTEGER`, `DECIMAL`, `BOOLEAN`, `DATE`, `DATETIME`, `VARCHAR`, `TEXT`).
-* **Krok 6 (`src/domain/models/ColumnDefinition.ts`)**: Definicja niemutowalnych interfejsów opisujących pojedynczą kolumnę (nazwa oryginalna, znormalizowana nazwa SQL, wykryty typ, typ nadpisany przez użytkownika, flaga `isNullable`).
+* **Krok 5 (`../src/domain/enums/SqlDataType.ts`)**: Definicja wspieranych typów danych SQL (`INTEGER`, `DECIMAL`, `BOOLEAN`, `DATE`, `DATETIME`, `VARCHAR`, `TEXT`).
+* **Krok 6 (`../src/domain/models/ColumnDefinition.ts`)**: Definicja niemutowalnych interfejsów opisujących pojedynczą kolumnę (nazwa oryginalna, znormalizowana nazwa SQL, wykryty typ, typ nadpisany przez użytkownika, flaga `isNullable`).
 * **Krok 7 (`src/domain/models/CsvRow.ts`)**: Definicja struktur reprezentujących surowe wiersze, komórki oraz wynik wstępnego parsowania pliku CSV.
 * **Krok 8 (`src/domain/models/TableSchema.ts`)**: Definicja pełnego schematu tabeli docelowej (nazwa tabeli, lista kolumn, opcje dialektu SQL).
 * **Krok 9 (`src/domain/contracts/ICsvParser.ts`)**: Kontrakt dla serwisu parsującego surowy tekst CSV do ustrukturyzowanego modelu domenowego. 
@@ -94,10 +94,10 @@ Rozbicie procesu generowania pliku `.sql` na trzy niezależne moduły (formatowa
 * **Krok 20 (`src/domain/services/SqlGenerator.ts`)**: Implementacja `ISqlGenerator` – koordynator łączący nagłówki komentarzy, kod z `SqlDdlBuilder` oraz paczki danych z `SqlDmlBuilder` w finalny skrypt SQL. 
 
 ### Faza 5: Warstwa Infrastruktury – Obsługa Plików i Zapisu
-Moduły realizujące fizyczny odczyt pliku wsadowego oraz jego zapis na dysku w folderze `public/resources/`.
+Moduły realizujące fizyczny odczyt pliku wsadowego oraz jego zapis na dysku w folderze `../public/resources`.
 * **Krok 21 (`src/infrastructure/BrowserFileReader.ts`)**: Adapter opakowujący API `FileReader` w bezpieczny, otypowany `Promise<string>` wczytujący zawartość pliku CSV.
 * **Krok 22 (`src/infrastructure/NodeSqlFileWriter.ts`)**: Moduł serwerowy zapisujący przesłaną treść bezpośrednio do `public/resources/<nazwa_pliku>.sql` przy użyciu modułu `fs/promises`.
-* **Krok 23 (`src/infrastructure/ApiSqlFileRepository.ts`)**: Implementacja interfejsu `ISqlFileRepository` komunikująca się z lokalnym endpointem w celu trwałego zapisu pliku `.sql` w `public/resources/`. 
+* **Krok 23 (`src/infrastructure/ApiSqlFileRepository.ts`)**: Implementacja interfejsu `ISqlFileRepository` komunikująca się z lokalnym endpointem w celu trwałego zapisu pliku `.sql` w `../public/resources`. 
 
 ### Faza 6: Warstwa Aplikacji – Zarządzanie Stanem i Przypadki Użycia
 Warstwa pośrednicząca (Application Layer), która pozwala na modyfikację rozpoznanych typów danych przed wygenerowaniem SQL, nie posiadając żadnej wiedzy o elementach HTML. 
@@ -116,7 +116,7 @@ Cienka warstwa widoku odpowiedzialna wyłącznie za renderowanie danych na ekran
 * **Krok 30 (`src/presentation/contracts/IViewComponents.ts`)**: Kontrakty definiujące metody komunikacji pomiędzy kontrolerem a poszczególnymi sekcjami widoku HTML. 
 * **Krok 31 (`src/presentation/components/FileUploadView.ts`)**: Komponent obsługujący pole wyboru pliku CSV (oraz Drag & Drop), wybór separatora i docelowej nazwy tabeli SQL.
 * **Krok 32 (`src/presentation/components/SchemaEditorView.ts`)**: Komponent generujący dynamiczny formularz tabelaryczny – wyświetla wykryte kolumny, przykładowe wartości z CSV oraz pola `<select>` pozwalające poprawić rozpoznany typ danych na właściwy.
-* **Krok 33 (`src/presentation/components/StatusNotificationView.ts`)**: Komponent wyświetlający podgląd wygenerowanego kodu SQL oraz komunikaty o pomyślnym zapisie pliku w `public/resources/`.
+* **Krok 33 (`src/presentation/components/StatusNotificationView.ts`)**: Komponent wyświetlający podgląd wygenerowanego kodu SQL oraz komunikaty o pomyślnym zapisie pliku w `../public/resources`.
 * **Krok 34 (`src/presentation/controllers/AppController.ts`)**: Kontroler spinający zdarzenia z komponentów widoku (`FileUploadView`, `SchemaEditorView`) z metodami `ConversionUseCase` oraz `SchemaOverrideService`.
 
 ### Faza 9: Inicjalizacja (Composition Root) i Weryfikacja

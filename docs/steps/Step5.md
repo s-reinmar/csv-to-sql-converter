@@ -2,7 +2,7 @@
 
 Definicja wspieranych typów danych SQL w procesie konwersji plików CSV.
 
-SqlDataType.ts
+src/domain/enums/SqlDataType.ts
 ```typescript
 export enum SqlDataType {
     INTEGER = "INTEGER",
