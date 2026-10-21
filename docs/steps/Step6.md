@@ -32,7 +32,7 @@ export interface IColumnDefinition {
 }
 ```
 
-## Podsumowanie i weryfikacja (Faza 2, Krok 6):
+## Podsumowanie i weryfikacja (Faza 2, Krok 6)
 
 ### [SOLID CHECK]
 Zasada pojedynczej odpowiedzialności (SRP): Plik ColumnDefinition.ts skupia się wyłącznie na definicji struktury danych i kontraktu reprezentującego pojedynczą kolumnę w tabeli, całkowicie izolując ją od logiki przetwarzania i warstwy prezentacji.
