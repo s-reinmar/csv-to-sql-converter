@@ -222,7 +222,7 @@ export class SchemaEditorView implements ISchemaEditorView {
 }
 ```
 
-## Podsumowanie i weryfikacja (Faza 8, Krok 31):
+## Podsumowanie i weryfikacja (Faza 8, Krok 32):
 
 ### [SOLID CHECK]:
 - **Single Responsibility Principle (SRP)**: Komponent `SchemaEditorView` skupia się wyłącznie na renderowaniu dynamicznej tabeli edycji schematu w warstwie DOM, umożliwiając użytkownikowi korektę nazw kolumn, typów danych oraz flag NULL, bez ingerencji w logikę biznesową czy przetwarzanie danych. Każda metoda w klasie ma jasno określoną odpowiedzialność, co ułatwia utrzymanie i testowanie kodu.
