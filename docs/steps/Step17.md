@@ -115,7 +115,7 @@ export class SqlValueEscaper {
 }
 ```
 
-## Podsumowanie i weryfikacja (Faza 3, Krok 17)
+## Podsumowanie i weryfikacja (Faza 4, Krok 17)
 
 ### [SOLID CHECK]
 Single Responsibility Principle (SRP): Klasa SqlValueEscaper zajmuje się wyłącznie transformacją i bezpiecznym escape'owaniem surowych ciągów tekstowych na bezpieczne literały SQL zgodnie z określonym typem danych.
