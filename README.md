@@ -64,18 +64,20 @@ csv-to-sql-converter/
 - [x] **Krok 2 (`tsconfig.json`):** Konfiguracja kompilatora TypeScript z włączonymi flagami rygorystycznymi (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, `noUnusedLocals: true`) – *wygenerowano automatycznie w WebStorm IDE*.
 - [x] **Krok 3 (`vite.config.ts`):** Konfiguracja serwera deweloperskiego z dedykowanym middlewarem Node.js obsługującym lokalny endpoint zapisu plików bezpośrednio do folderu `public/resources/` – *wygenerowano automatycznie w WebStorm IDE*.
 - [x] **Krok 4 (`public/resources/.gitkeep` oraz drzewo `src/`):** Utworzenie struktury katalogów statycznych i docelowego miejsca zapisu wygenerowanych skryptów `.sql` – *wykonano za pomocą skryptu PowerShell*.
+- [x] **Krok 5 (`src/domain/enums/SqlDataType.ts`):** Definicja wspieranych typów danych SQL (INTEGER, DECIMAL, BOOLEAN, DATE, DATETIME, VARCHAR, TEXT) – *zrealizowano w pełni zgodnie z zasadami SRP i DIP*.
+- 
 
 ---
 
 ### ⏳ Kolejne Fazy w Planie Budowy
 
-- [⏳] **Faza 2: Warstwa Domeny – Modele i Kontrakty (Kroki 5–12)**
+- [X] **Faza 2: Warstwa Domeny – Modele i Kontrakty (Kroki 5–12)**
     - Definicja `SqlDataType`, modeli `ColumnDefinition`, `CsvRow`, `TableSchema` oraz interfejsów `ICsvParser`, `ITypeInferenceEngine`, `ISqlGenerator`, `ISqlFileRepository`.
-- [ ] **Faza 3: Warstwa Domeny – Silnik Parsowania CSV i Rozpoznawania Typów (Kroki 13–16)**
+- [X] **Faza 3: Warstwa Domeny – Silnik Parsowania CSV i Rozpoznawania Typów (Kroki 13–16)**
     - Implementacja `CsvTokenizer`, `CsvParser`, `TypeMatchers` oraz `TypeInferenceEngine`.
-- [ ] **Faza 4: Warstwa Domeny – Generator Kodów SQL (Kroki 17–20)**
+- [X] **Faza 4: Warstwa Domeny – Generator Kodów SQL (Kroki 17–20)**
     - Implementacja `SqlValueEscaper`, `SqlDdlBuilder`, `SqlDmlBuilder` oraz `SqlGenerator`.
-- [ ] **Faza 5: Warstwa Infrastruktury – Obsługa Plików i Zapisu (Kroki 21–23)**
+- [⏳] **Faza 5: Warstwa Infrastruktury – Obsługa Plików i Zapisu (Kroki 21–23)**
     - Implementacja `BrowserFileReader`, `NodeSqlFileWriter` oraz `ApiSqlFileRepository`.
 - [ ] **Faza 6: Warstwa Aplikacji – Zarządzanie Stanem i Przypadki Użycia (Kroki 24–26)**
     - Implementacja `ConversionState`, `SchemaOverrideService` oraz `ConversionUseCase`.
