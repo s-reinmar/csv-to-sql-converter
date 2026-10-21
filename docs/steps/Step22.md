@@ -89,7 +89,7 @@ Otwórz tsconfig.json i dodaj lub upewnij się, że masz następującą konfigur
 }
 ```
 
-## Podsumowanie i weryfikacja (Faza 4, Krok 22)
+## Podsumowanie i weryfikacja (Faza 5, Krok 22)
 
 ### [SOLID CHECK]
 - Single Responsibility Principle (SRP): Klasa NodeSqlFileWriter zajmuje się wyłącznie zapisem treści SQL do pliku w katalogu public/resources/, bez mieszania logiki biznesowej czy prezentacyjnej.

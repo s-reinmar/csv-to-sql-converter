@@ -56,7 +56,7 @@ export class BrowserFileReader {
 }
 ```
 
-## Podsumowanie i weryfikacja (Faza 4, Krok 20)
+## Podsumowanie i weryfikacja (Faza 5, Krok 20)
 
 #### [SOLID CHECK]:
 - Single Responsibility Principle (SRP): Klasa BrowserFileReader pełni wyłącznie rolę adaptera do natywnego API FileReader, koncentrując się na asynchronicznym odczycie plików tekstowych i CSV w przeglądarce, bez mieszania logiki biznesowej czy prezentacyjnej.

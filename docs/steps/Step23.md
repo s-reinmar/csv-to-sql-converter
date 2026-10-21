@@ -66,7 +66,7 @@ export class ApiSqlFileRepository implements ISqlFileRepository {
 }
 ```
 
-## Podsumowanie i weryfikacja (Faza 4, Krok 22)
+## Podsumowanie i weryfikacja (Faza 5, Krok 22)
 
 ### [SOLID CHECK]
 - Single Responsibility Principle (SRP): Klasa ApiSqlFileRepository pełni wyłącznie rolę komunikatora z lokalnym endpointem API, delegując odpowiedzialność za faktyczny zapis pliku do serwera. Sama nie zajmuje się logiką zapisu ani strukturą plików.
