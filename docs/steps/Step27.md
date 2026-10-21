@@ -1,0 +1,113 @@
+# Krok 27 (index.html): Semantyczny szkielet dokumentu HTML5 z kontenerami na formularz wgrania pliku, tabelę edycji typów kolumn, podgląd SQL oraz panel powiadomień.
+
+Semantyczny szkielet dokumentu HTML5 z kontenerami na formularz wgrania pliku, tabelę edycji typów kolumn, podgląd SQL oraz panel powiadomień.
+
+index.html
+```html
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to SQL Converter</title>
+    <!-- Arkusze stylów (Faza 7) -->
+    <link rel="stylesheet" href="./src/presentation/styles/theme-variables.css">
+    <link rel="stylesheet" href="./src/presentation/styles/components.css">
+</head>
+<body>
+<div id="app" class="app-container">
+    <!-- Nagłówek aplikacji -->
+    <header class="app-header">
+        <h1>CSV to SQL Converter</h1>
+        <p class="app-subtitle">Konwertuj pliki CSV do skryptów SQL z pełną kontrolą nad schematem danych</p>
+    </header>
+
+    <!-- Główny kontener roboczy (Headless / MVC Architecture) -->
+    <main class="app-main">
+        <!-- 1. Formularz wgrania pliku CSV -->
+        <section id="file-upload-section" class="card upload-card" aria-labelledby="upload-heading">
+            <h2 id="upload-heading">1. Wgraj plik CSV</h2>
+            <div class="drop-zone" id="drop-zone">
+                <input type="file" id="csv-file-input" accept=".csv,text/csv" class="file-input">
+                <div class="drop-zone-prompt">
+                    <span class="drop-zone-icon">📁</span>
+                    <p>Przeciągnij i upuść plik CSV tutaj lub <label for="csv-file-input" class="file-browse-link">wybierz z dysku</label></p>
+                </div>
+            </div>
+            <div class="upload-options">
+                <div class="form-group">
+                    <label for="delimiter-select">Separator:</label>
+                    <select id="delimiter-select" class="form-control">
+                        <option value="">Automatyczny wykrywacz</option>
+                        <option value=",">Przecinek (,)</option>
+                        <option value=";">Średnik (;)</option>
+                        <option value="	">Tabulacja (\t)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="table-name-input">Nazwa tabeli SQL:</label>
+                    <input type="text" id="table-name-input" class="form-control" placeholder="np. imported_data">
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Tabela edycji typów kolumn (Schema Editor) -->
+        <section id="schema-editor-section" class="card schema-card hidden" aria-labelledby="schema-heading">
+            <h2 id="schema-heading">2. Edycja schematu i typów kolumn</h2>
+            <div class="table-responsive">
+                <table class="schema-table" id="schema-table">
+                    <thead>
+                    <tr>
+                        <th>Oryginalna kolumna</th>
+                        <th>Nazwa SQL</th>
+                        <th>Wykryty typ</th>
+                        <th>Typ docelowy (Override)</th>
+                        <th>NULL?</th>
+                    </tr>
+                    </thead>
+                    <tbody id="schema-table-body">
+                    <!-- Dynamicznie generowane wiersze edycji schematu -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 3. Podgląd SQL -->
+        <section id="sql-preview-section" class="card preview-card hidden" aria-labelledby="preview-heading">
+            <div class="preview-header">
+                <h2 id="preview-heading">3. Podgląd skryptu SQL</h2>
+                <button type="button" id="save-sql-btn" class="btn btn-primary">Zapisz plik .sql</button>
+            </div>
+            <div class="code-preview-wrapper">
+                <pre><code id="sql-code-preview">-- Tutaj pojawi się wygenerowany kod SQL...</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <!-- 4. Panel powiadomień i statusów -->
+    <aside id="status-notification-region" class="notification-region" aria-live="polite">
+        <!-- Dynamiczne komunikaty błędów, ładowania oraz sukcesu zapisu -->
+    </aside>
+
+    <!-- Stopka aplikacji -->
+    <footer class="app-footer">
+        <p>&copy; 2026 CSV to SQL Converter &bull; Clean Architecture &amp; SOLID</p>
+    </footer>
+</div>
+
+<!-- Główny punkt wejścia TypeScript (Faza 9) -->
+<script type="module" src="./src/main.ts"></script>
+</body>
+</html>
+```
+
+## Podsumowanie i weryfikacja (Faza 7, Krok 27)
+
+### [SOLID CHECK]
+- Zasada pojedynczej odpowiedzialności (SRP): Struktura HTML5 została podzielona na semantyczne sekcje (header, main, section, aside, footer), z których każda pełni wyłącznie jedną rolę: nagłówek aplikacji, formularz wgrania pliku, edycja schematu kolumn, podgląd SQL oraz panel powiadomień. Każda sekcja jest odpowiedzialna za konkretną funkcjonalność, co ułatwia utrzymanie i rozwój aplikacji.
+
+### [ACCESSIBILITY CHECK]
+- Wykorzystanie atrybutów ARIA (aria-labelledby, aria-live) oraz semantycznych tagów HTML5 (header, main, section, aside, footer) zapewnia lepszą dostępność dla użytkowników korzystających z czytników ekranu i innych technologii wspomagających, co jest zgodne z zasadami dostępności (WCAG).
+
+### [RESPONSIVE DESIGN CHECK]
+- Struktura HTML5 została zaprojektowana z myślą o responsywności, umożliwiając prawidłowe wyświetlanie na różnych urządzeniach i rozdzielczościach ekranu. Użycie klas CSS (np. .card, .table-responsive) pozwala na elastyczne dostosowanie układu i wyglądu elementów interfejsu w zależności od wielkości ekranu, co jest zgodne z zasadami projektowania responsywnego (RWD).
