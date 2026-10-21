@@ -292,7 +292,7 @@ body {
 }
 ```
 
-### Podsumowanie i weryfikacja (Faza 9, Krok 29):
+### Podsumowanie i weryfikacja (Faza 7, Krok 29):
 
 ### [SOLID CHECK]:
 Zdefiniowane style CSS są zgodne z zasadą pojedynczej odpowiedzialności (SRP), ponieważ koncentrują się wyłącznie na wizualnej prezentacji komponentów interfejsu użytkownika, bez ingerencji w logikę biznesową czy strukturę danych. Każda sekcja stylów odpowiada za konkretny aspekt wizualny, co ułatwia utrzymanie i modyfikację wyglądu aplikacji w przyszłości.
