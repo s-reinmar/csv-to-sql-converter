@@ -58,14 +58,7 @@ csv-to-sql-converter/
 ## Status Realizacji Projektu
 
 ### ✅ Faza 1: Konfiguracja środowiska i projektu w WebStorm (Zakończona)
-Środowisko projektowe oraz pełne drzewo katalogów zostały pomyślnie zainicjalizowane:
-
-- [x] **Krok 1 (`package.json`):** Inicjalizacja projektu Node.js, konfiguracja skryptów uruchoményjnych oraz zależności deweloperskich (`typescript`, `vite`, `@types/node`) – *wygenerowano automatycznie w WebStorm IDE*.
-- [x] **Krok 2 (`tsconfig.json`):** Konfiguracja kompilatora TypeScript z włączonymi flagami rygorystycznymi (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, `noUnusedLocals: true`) – *wygenerowano automatycznie w WebStorm IDE*.
-- [x] **Krok 3 (`vite.config.ts`):** Konfiguracja serwera deweloperskiego z dedykowanym middlewarem Node.js obsługującym lokalny endpoint zapisu plików bezpośrednio do folderu `public/resources/` – *wygenerowano automatycznie w WebStorm IDE*.
-- [x] **Krok 4 (`public/resources/.gitkeep` oraz drzewo `src/`):** Utworzenie struktury katalogów statycznych i docelowego miejsca zapisu wygenerowanych skryptów `.sql` – *wykonano za pomocą skryptu PowerShell*.
-- [x] **Krok 5 (`src/domain/enums/SqlDataType.ts`):** Definicja wspieranych typów danych SQL (INTEGER, DECIMAL, BOOLEAN, DATE, DATETIME, VARCHAR, TEXT) – *zrealizowano w pełni zgodnie z zasadami SRP i DIP*.
-- 
+Środowisko projektowe oraz pełne drzewo katalogów zostały pomyślnie zainicjalizowane. (Kroki 1-4 w dokumentacji krok po kroku).
 
 ---
 
@@ -77,13 +70,13 @@ csv-to-sql-converter/
     - Implementacja `CsvTokenizer`, `CsvParser`, `TypeMatchers` oraz `TypeInferenceEngine`.
 - [X] **Faza 4: Warstwa Domeny – Generator Kodów SQL (Kroki 17–20)**
     - Implementacja `SqlValueEscaper`, `SqlDdlBuilder`, `SqlDmlBuilder` oraz `SqlGenerator`.
-- [⏳] **Faza 5: Warstwa Infrastruktury – Obsługa Plików i Zapisu (Kroki 21–23)**
+- [X] **Faza 5: Warstwa Infrastruktury – Obsługa Plików i Zapisu (Kroki 21–23)**
     - Implementacja `BrowserFileReader`, `NodeSqlFileWriter` oraz `ApiSqlFileRepository`.
-- [ ] **Faza 6: Warstwa Aplikacji – Zarządzanie Stanem i Przypadki Użycia (Kroki 24–26)**
+- [X] **Faza 6: Warstwa Aplikacji – Zarządzanie Stanem i Przypadki Użycia (Kroki 24–26)**
     - Implementacja `ConversionState`, `SchemaOverrideService` oraz `ConversionUseCase`.
-- [ ] **Faza 7: Warstwa Prezentacji – Szata Graficzna (Kroki 27–29)**
+- [X] **Faza 7: Warstwa Prezentacji – Szata Graficzna (Kroki 27–29)**
     - Stworzenie `index.html`, `theme-variables.css` oraz `components.css` (ciemny motyw czarno-niebieski z jasnoniebieskimi akcentami).
-- [ ] **Faza 8: Warstwa Prezentacji – Komponenty Widoku i Kontrolery DOM (Kroki 30–34)**
+- [X] **Faza 8: Warstwa Prezentacji – Komponenty Widoku i Kontrolery DOM (Kroki 30–34)**
     - Implementacja `IViewComponents`, `FileUploadView`, `SchemaEditorView`, `StatusNotificationView` oraz `AppController`.
-- [ ] **Faza 9: Inicjalizacja (Composition Root) i Dane Testowe (Kroki 35–36)**
+- [X] **Faza 9: Inicjalizacja (Composition Root) i Dane Testowe (Kroki 35–36)**
     - Wstrzyknięcie zależności w `src/main.ts` oraz przygotowanie pliku testowego `public/resources/sample.csv`.
