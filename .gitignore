@@ -1,5 +1,8 @@
 .idea
 
+docs/steps/postMvp
+docs/steps/preMvp
+
 /tmp
 /out-tsc
 
