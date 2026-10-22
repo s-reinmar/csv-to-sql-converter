@@ -1,15 +1,20 @@
 import { ITableSchema } from '../domain/models/TableSchema';
 import { IColumnDefinition } from '../domain/models/ColumnDefinition';
 import { SqlDataType } from '../domain/enums/SqlDataType';
+import { INameNormalizationService } from '../domain/contracts/INameNormalizationService';
 
 /**
  * Serwis aplikacyjny odpowiedzialny za obsługę modyfikacji schematu tabeli (Schema Overrides)
  * dokonywanych przez użytkownika (zmiana nazwy kolumny, nadpisanie typu danych oraz flaga NULL/NOT NULL).
  */
 export class SchemaOverrideService {
+    constructor(
+        private readonly normalizationService: INameNormalizationService
+    ) {}
 
     /**
-     * Aktualizuje nazwę kolumny o wskazanym indeksie lub oryginalnej nazwie.
+     * Aktualizuje nazwę kolumny o wskazanym indeksie lub oryginalnej nazwie,
+     * normalizując nową nazwę za pomocą serwisu normalizacyjnego.
      */
     public updateColumnName(
         schema: ITableSchema,
@@ -25,11 +30,13 @@ export class SchemaOverrideService {
             throw new Error('Nazwa kolumny nie może być pusta.');
         }
 
+        const safeSqlName = this.normalizationService.normalizeColumnName(trimmedName);
+
         const updatedColumns: ReadonlyArray<IColumnDefinition> = schema.columns.map((col) => {
             if (col.originalName === targetOriginalName) {
                 return {
                     ...col,
-                    sqlName: trimmedName
+                    sqlName: safeSqlName
                 };
             }
             return col;
@@ -98,7 +105,7 @@ export class SchemaOverrideService {
     }
 
     /**
-     * Aktualizuje nazwę całej tabeli docelowej.
+     * Aktualizuje nazwę całej tabeli docelowej, normalizując ją za pomocą serwisu normalizacyjnego.
      */
     public updateTableName(schema: ITableSchema, newTableName: string): ITableSchema {
         if (!schema) {
@@ -110,9 +117,11 @@ export class SchemaOverrideService {
             throw new Error('Nazwa tabeli nie może być pusta.');
         }
 
+        const safeTableName = this.normalizationService.normalizeTableName(trimmed);
+
         return {
             ...schema,
-            tableName: trimmed
+            tableName: safeTableName
         };
     }
 }

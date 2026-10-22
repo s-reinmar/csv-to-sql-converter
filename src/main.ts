@@ -1,5 +1,6 @@
 import { ConversionUseCase } from './application/ConversionUseCase';
 import { SchemaOverrideService } from './application/SchemaOverrideService';
+import { NameNormalizationService } from './domain/services/NameNormalizationService';
 import { CsvParser } from './domain/services/CsvParser';
 import { TypeInferenceEngine } from './domain/services/TypeInferenceEngine';
 import { CsvTokenizer } from './domain/services/CsvTokenizer';
@@ -20,11 +21,14 @@ import { AppController } from './presentation/controllers/AppController';
  */
 document.addEventListener('DOMContentLoaded', () => {
     try {
+        // 0. Inicjalizacja serwisu normalizacji nazw
+        const normalizationService = new NameNormalizationService();
+
         // 1. Inicjalizacja zależności domenowych
         const csvTokenizer = new CsvTokenizer();
         const csvParser = new CsvParser(csvTokenizer);
         const typeMatchers = new TypeMatchers();
-        const typeInferenceEngine = new TypeInferenceEngine(typeMatchers);
+        const typeInferenceEngine = new TypeInferenceEngine(typeMatchers, normalizationService);
 
         const sqlValueEscaper = new SqlValueEscaper();
         const sqlDdlBuilder = new SqlDdlBuilder();
@@ -35,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sqlFileRepository = new ApiSqlFileRepository('/api/save-sql');
 
         // 3. Inicjalizacja serwisu aplikacji i przypadków użycia
-        const schemaOverrideService = new SchemaOverrideService();
+        const schemaOverrideService = new SchemaOverrideService(normalizationService);
         const conversionUseCase = new ConversionUseCase(
             csvParser,
             typeInferenceEngine,

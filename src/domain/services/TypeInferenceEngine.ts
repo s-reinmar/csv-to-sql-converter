@@ -10,19 +10,26 @@ import { ITableSchema } from '../models/TableSchema';
 import { IColumnDefinition } from '../models/ColumnDefinition';
 import { ICsvRow } from '../models/CsvRow';
 import { TypeMatchers } from './TypeMatchers';
+import { INameNormalizationService } from '../contracts/INameNormalizationService';
 
 /**
  * Serwis domenowy realizujący wnioskowanie typów danych oraz struktury tabeli SQL.
  */
 export class TypeInferenceEngine implements ITypeInferenceEngine {
     private readonly matchers: TypeMatchers;
+    private readonly normalizationService: INameNormalizationService;
 
     /**
-     * Tworzy instancję silnika wnioskowania typów z wstrzykiwanym matcherem (Dependency Injection).
+     * Tworzy instancję silnika wnioskowania typów z wstrzykiwanymi zależnościami (Dependency Injection).
      * @param matchers Serwis zawierający predykaty walidujące typy SQL.
+     * @param normalizationService Serwis normalizacji nazw kolumn i tabel.
      */
-    constructor(matchers: TypeMatchers) {
+    constructor(
+        matchers: TypeMatchers,
+        normalizationService: INameNormalizationService
+    ) {
         this.matchers = matchers;
+        this.normalizationService = normalizationService;
     }
 
     /**
@@ -94,8 +101,8 @@ export class TypeInferenceEngine implements ITypeInferenceEngine {
             // Wnioskowanie typu danych
             const detectedType = this.inferColumnType(columnValues);
 
-            // Normalizacja nazwy kolumny do bezpiecznego identyfikatora SQL
-            const sqlName = this.normalizeColumnName(header);
+            // Normalizacja nazwy kolumny do bezpiecznego identyfikatora SQL przy użyciu serwisu domenowego
+            const sqlName = this.normalizationService.normalizeColumnName(header);
 
             return {
                 originalName: header,
@@ -106,46 +113,12 @@ export class TypeInferenceEngine implements ITypeInferenceEngine {
         });
 
         return {
-            tableName: this.normalizeTableName(tableName),
+            tableName: this.normalizationService.normalizeTableName(tableName),
             columns,
             dialectOptions: {
                 identifierQuote: '`',
                 includeDropTable: true
             }
         };
-    }
-
-    /**
-     * Normalizuje nazwę kolumny do bezpiecznego formatu identyfikatora SQL.
-     * @param originalName Oryginalna nazwa kolumny.
-     */
-    private normalizeColumnName(originalName: string): string {
-        const trimmed = originalName.trim();
-        if (!trimmed) {
-            return 'column_unnamed';
-        }
-
-        return trimmed
-            .toLowerCase()
-            .replace(/[^a-z0-9_]/g, '_')
-            .replace(/_+/g, '_')
-            .replace(/^(_+)/, '')
-            .replace(/(_+)$/, '');
-    }
-
-    /**
-     * Normalizuje nazwę tabeli do bezpiecznego formatu SQL.
-     * @param rawTableName Oryginalna nazwa tabeli.
-     */
-    private normalizeTableName(rawTableName: string): string {
-        const trimmed = rawTableName.trim();
-        if (!trimmed) {
-            return 'imported_table';
-        }
-
-        return trimmed
-            .toLowerCase()
-            .replace(/[^a-z0-9_]/g, '_')
-            .replace(/_+/g, '_');
     }
 }
