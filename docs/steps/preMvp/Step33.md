@@ -1,6 +1,6 @@
 # Krok 33 (src/presentation/components/StatusNotificationView.ts): Komponent wyświetlający podgląd wygenerowanego kodu SQL oraz komunikaty o pomyślnym zapisie pliku w public/resources/.
 
-Komponent `StatusNotificationView` jest odpowiedzialny za wyświetlanie podglądu wygenerowanego kodu SQL oraz komunikatów o pomyślnym zapisie pliku w katalogu `public/resources/`. Umożliwia użytkownikowi przeglądanie wygenerowanych instrukcji SQL przed ich zapisaniem lub dalszym przetwarzaniem.
+Komponent `StatusNotificationView` jest odpowiedzialny za wyświetlanie podglądu wygenerowanego kodu SQL oraz komunikatów o pomyślnym zapisie pliku w katalogu `../../../public/resources`. Umożliwia użytkownikowi przeglądanie wygenerowanych instrukcji SQL przed ich zapisaniem lub dalszym przetwarzaniem.
 
 src/presentation/components/StatusNotificationView.ts
 ```typescript

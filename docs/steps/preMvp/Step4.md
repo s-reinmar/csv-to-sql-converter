@@ -31,5 +31,5 @@ New-Item -ItemType File -Force -Path "csv-to-sql-converter/public/resources/.git
 Write-Host "Directory structure successfully created!" -ForegroundColor Green
 ```
 
-Polecenie powyższego skryptu PowerShell tworzy kompletną strukturę katalogów dla projektu `csv-to-sql-converter`, w tym katalog docelowy `../../public/resources`, w którym zostanie zapisany wygenerowany plik `.sql`. Dodatkowo, w katalogu `resources` tworzony jest plik `.gitkeep`, aby umożliwić śledzenie pustego katalogu w systemie kontroli wersji Git.
+Polecenie powyższego skryptu PowerShell tworzy kompletną strukturę katalogów dla projektu `csv-to-sql-converter`, w tym katalog docelowy `../../../public/resources`, w którym zostanie zapisany wygenerowany plik `.sql`. Dodatkowo, w katalogu `resources` tworzony jest plik `.gitkeep`, aby umożliwić śledzenie pustego katalogu w systemie kontroli wersji Git.
 To kończy etap tworzenia struktury katalogów i przygotowania środowiska do dalszej implementacji aplikacji.

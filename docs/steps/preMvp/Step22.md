@@ -1,6 +1,6 @@
 # Krok 22 (src/infrastructure/NodeSqlFileWriter.ts): Moduł serwerowy zapisujący przesłaną treść bezpośrednio do public/resources/<nazwa_pliku>.sql przy użyciu modułu fs/promises.
 
-Moduł serwerowy `NodeSqlFileWriter` umożliwia zapisanie przesłanej treści SQL bezpośrednio do pliku w katalogu `public/resources/`, korzystając z modułu `fs/promises` w Node.js. Dzięki temu można łatwo generować i przechowywać skrypty SQL na serwerze, zapewniając asynchroniczny zapis plików oraz obsługę błędów.
+Moduł serwerowy `NodeSqlFileWriter` umożliwia zapisanie przesłanej treści SQL bezpośrednio do pliku w katalogu `../../../public/resources`, korzystając z modułu `fs/promises` w Node.js. Dzięki temu można łatwo generować i przechowywać skrypty SQL na serwerze, zapewniając asynchroniczny zapis plików oraz obsługę błędów.
 
 src/infrastructure/NodeSqlFileWriter.ts
 ```typescript

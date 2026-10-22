@@ -1,6 +1,6 @@
 # Krok 23 (src/infrastructure/ApiSqlFileRepository.ts): Implementacja interfejsu ISqlFileRepository komunikująca się z lokalnym endpointem w celu trwałego zapisu pliku .sql w public/resources/.
 
-Implementacja interfejsu `ISqlFileRepository` w serwisie `ApiSqlFileRepository` umożliwia komunikację z lokalnym endpointem serwera w celu trwałego zapisu wygenerowanego pliku `.sql` w katalogu `public/resources/`. Serwis ten wykorzystuje mechanizm fetch API do wysyłania żądań HTTP POST, przesyłając nazwę pliku oraz jego zawartość w formacie JSON.
+Implementacja interfejsu `ISqlFileRepository` w serwisie `ApiSqlFileRepository` umożliwia komunikację z lokalnym endpointem serwera w celu trwałego zapisu wygenerowanego pliku `.sql` w katalogu `../../../public/resources`. Serwis ten wykorzystuje mechanizm fetch API do wysyłania żądań HTTP POST, przesyłając nazwę pliku oraz jego zawartość w formacie JSON.
 
 src/infrastructure/ApiSqlFileRepository.ts
 ```typescript
