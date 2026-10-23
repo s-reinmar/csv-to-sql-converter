@@ -7,7 +7,6 @@
 import { ICsvParser, ICsvParseResult } from '../contracts/ICsvParser';
 import { ICsvRow, ICsvCell } from '../models/CsvRow';
 import { CsvTokenizer } from './CsvTokenizer';
-
 /**
  * Główny serwis domenowy parsujący surowy tekst CSV do ustrukturyzowanego modelu domenowego.
  */

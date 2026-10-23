@@ -14,6 +14,7 @@ import { FileUploadView } from './presentation/components/FileUploadView';
 import { SchemaEditorView } from './presentation/components/SchemaEditorView';
 import { StatusNotificationView } from './presentation/components/StatusNotificationView';
 import { AppController } from './presentation/controllers/AppController';
+import { SeparatorDetector } from './domain/services/SeparatorDetector';
 
 /**
  * Punkt wejścia aplikacji (Composition Root) - Krok 35.
@@ -21,8 +22,9 @@ import { AppController } from './presentation/controllers/AppController';
  */
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        // 0. Inicjalizacja serwisu normalizacji nazw
+        // 0. Inicjalizacja serwisu normalizacji nazw oraz detektora separatora
         const normalizationService = new NameNormalizationService();
+        const separatorDetector = new SeparatorDetector();
 
         // 1. Inicjalizacja zależności domenowych
         const csvTokenizer = new CsvTokenizer();
@@ -45,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
             typeInferenceEngine,
             sqlGenerator,
             sqlFileRepository,
-            schemaOverrideService
+            schemaOverrideService,
+            separatorDetector
         );
 
         // 4. Inicjalizacja komponentów widoku prezentacji (DOM)

@@ -78,6 +78,14 @@ csv-to-sql-converter/
 
 ---
 
+## CSV to SQL Converter (Faza Post-MVP)
+
+- [X]: KROK 1.1: Automatyczna normalizacja nazw tabel i kolumn
+- [X]: KROK 1.2: Automatyczna detekcja separatora pliku CSV
+
+
+---
+
 ## Uruchomienie projektu (MVP)
 
 1. Zainstaluj zależności:

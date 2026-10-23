@@ -13,7 +13,7 @@ W pierwszej kolejności skupiamy się na stabilności parsowania, precyzji wykry
     - Dodanie obsługi w `SchemaOverrideService`, by znormalizowane nazwy trafiały do `ConversionState`.
   - **Zależności:** Brak.
 
-- [ ] **KROK 1.2: Automatyczna detekcja separatora pliku CSV**
+- [X] **KROK 1.2: Automatyczna detekcja separatora pliku CSV**
   - **Powiązanie z Todoist:** *Automatyczne rozpoznawanie separatora pliku CSV bez konieczności ręcznego wyboru.*
   - **Cel i DoD:** 
     - Rozszerzenie interfejsu `ICsvParser` oraz jego implementacji.

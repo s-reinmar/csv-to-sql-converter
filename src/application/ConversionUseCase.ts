@@ -5,6 +5,7 @@ import { ISqlFileRepository } from '../domain/contracts/ISqlFileRepository';
 import { ConversionState, IConversionStateData } from './ConversionState';
 import { SchemaOverrideService } from './SchemaOverrideService';
 import { SqlDataType } from '../domain/enums/SqlDataType';
+import { ISeparatorDetector } from '../domain/contracts/ISeparatorDetector';
 
 /**
  * Główny orkiestrator przepływu pracy (Use Case) dla konwersji CSV do SQL.
@@ -19,7 +20,8 @@ export class ConversionUseCase {
         private readonly typeInferenceEngine: ITypeInferenceEngine,
         private readonly sqlGenerator: ISqlGenerator,
         private readonly sqlFileRepository: ISqlFileRepository,
-        private readonly schemaOverrideService: SchemaOverrideService
+        private readonly schemaOverrideService: SchemaOverrideService,
+        private readonly separatorDetector: ISeparatorDetector
     ) {
         this.currentState = new ConversionState();
     }
@@ -36,7 +38,7 @@ export class ConversionUseCase {
      *
      * @param fileContent Surowa treść pliku CSV.
      * @param fileName Nazwa pliku wejściowego.
-     * @param delimiter Opcjonalny separator (domyślnie wykrywany automatycznie lub przecinek).
+     * @param delimiter Opcjonalny separator (domyślnie wykrywany automatycznie przez detektor).
      */
     public async loadAndParseCsv(
         fileContent: string,
@@ -50,10 +52,15 @@ export class ConversionUseCase {
         });
 
         try {
-            // 1. Parsowanie CSV
-            const csvData = this.csvParser.parse(fileContent, delimiter);
+            // 1. Automatyczna detekcja separatora, jeśli nie został wymuszony z zewnątrz
+            const resolvedDelimiter = (delimiter && delimiter.trim() !== '')
+                ? delimiter
+                : this.separatorDetector.detect(fileContent);
 
-            // 2. Automatyczne wnioskowanie schematu i typów
+            // 2. Parsowanie CSV z wyznaczonym separatorem
+            const csvData = this.csvParser.parse(fileContent, resolvedDelimiter);
+
+            // 3. Automatyczne wnioskowanie schematu i typów
             const defaultTableName = this.extractTableNameFromFileName(fileName);
             const tableSchema = this.typeInferenceEngine.inferTableSchema(
                 csvData.headers,
@@ -61,7 +68,7 @@ export class ConversionUseCase {
                 defaultTableName
             );
 
-            // 3. Automatyczne wygenerowanie wstępnego SQL
+            // 4. Automatyczne wygenerowanie wstępnego SQL
             const generatedSql = this.sqlGenerator.generateSql(tableSchema, csvData.rows);
 
             this.currentState = this.currentState.cloneWith({
@@ -213,7 +220,7 @@ export class ConversionUseCase {
      * Pomocnicza metoda wyciągająca domyślną nazwę tabeli z nazwy pliku CSV.
      */
     private extractTableNameFromFileName(fileName: string): string {
-        const cleanName = fileName.replace(/\.[^/.]+$/, ''); // usunięcie rozszerzenia
+        const cleanName = fileName.replace(/\.[^/.]+$/, '');
         return cleanName
             .toLowerCase()
             .replace(/[^a-z0-9_]/g, '_')
