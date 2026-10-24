@@ -6,10 +6,11 @@ import { ConversionState, IConversionStateData } from './ConversionState';
 import { SchemaOverrideService } from './SchemaOverrideService';
 import { SqlDataType } from '../domain/enums/SqlDataType';
 import { ISeparatorDetector } from '../domain/contracts/ISeparatorDetector';
+import { IDataValidationService } from '../domain/contracts/IDataValidationService';
 
 /**
  * Główny orkiestrator przepływu pracy (Use Case) dla konwersji CSV do SQL.
- * Koordynuje wczytywanie pliku, wnioskowanie typów, modyfikacje schematu,
+ * Koordynuje wczytywanie pliku, wnioskowanie typów, modyfikacje schematu, walidację danych,
  * generowanie kodu SQL oraz jego trwały zapis, utrzymując niemutowalny stan aplikacji.
  */
 export class ConversionUseCase {
@@ -21,7 +22,8 @@ export class ConversionUseCase {
         private readonly sqlGenerator: ISqlGenerator,
         private readonly sqlFileRepository: ISqlFileRepository,
         private readonly schemaOverrideService: SchemaOverrideService,
-        private readonly separatorDetector: ISeparatorDetector
+        private readonly separatorDetector: ISeparatorDetector,
+        private readonly validationService: IDataValidationService
     ) {
         this.currentState = new ConversionState();
     }
@@ -34,7 +36,8 @@ export class ConversionUseCase {
     }
 
     /**
-     * Wczytuje i sparsuje zawartość pliku CSV, uruchamia detekcję typów i inicjalizuje schemat tabeli.
+     * Wczytuje i sparsuje zawartość pliku CSV, uruchamia detekcję typów, wykonuje walidację danych,
+     * i inicjalizuje schemat tabeli.
      *
      * @param fileContent Surowa treść pliku CSV.
      * @param fileName Nazwa pliku wejściowego.
@@ -60,7 +63,10 @@ export class ConversionUseCase {
             // 2. Parsowanie CSV z wyznaczonym separatorem
             const csvData = this.csvParser.parse(fileContent, resolvedDelimiter);
 
-            // 3. Automatyczne wnioskowanie schematu i typów
+            // 3. Rozszerzona walidacja danych wejściowych po tokenizacji
+            const validationWarnings = this.validationService.validate(csvData);
+
+            // 4. Automatyczne wnioskowanie schematu i typów
             const defaultTableName = this.extractTableNameFromFileName(fileName);
             const tableSchema = this.typeInferenceEngine.inferTableSchema(
                 csvData.headers,
@@ -68,13 +74,14 @@ export class ConversionUseCase {
                 defaultTableName
             );
 
-            // 4. Automatyczne wygenerowanie wstępnego SQL
+            // 5. Automatyczne wygenerowanie wstępnego SQL
             const generatedSql = this.sqlGenerator.generateSql(tableSchema, csvData.rows);
 
             this.currentState = this.currentState.cloneWith({
                 csvData,
                 tableSchema,
                 generatedSql,
+                warnings: validationWarnings,
                 isLoading: false
             });
 

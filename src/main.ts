@@ -15,16 +15,18 @@ import { SchemaEditorView } from './presentation/components/SchemaEditorView';
 import { StatusNotificationView } from './presentation/components/StatusNotificationView';
 import { AppController } from './presentation/controllers/AppController';
 import { SeparatorDetector } from './domain/services/SeparatorDetector';
+import { DataValidationService } from './domain/services/DataValidationService';
 
 /**
- * Punkt wejścia aplikacji (Composition Root) - Krok 35.
+ * Punkt wejścia aplikacji (Composition Root).
  * Inicjalizuje kontener Dependency Injection oraz spina wszystkie warstwy aplikacji.
  */
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        // 0. Inicjalizacja serwisu normalizacji nazw oraz detektora separatora
+        // 0. Inicjalizacja bezstanowych serwisów pomocniczych
         const normalizationService = new NameNormalizationService();
         const separatorDetector = new SeparatorDetector();
+        const dataValidationService = new DataValidationService(); // ZAINICJOWANY WALIDATOR
 
         // 1. Inicjalizacja zależności domenowych
         const csvTokenizer = new CsvTokenizer();
@@ -48,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
             sqlGenerator,
             sqlFileRepository,
             schemaOverrideService,
-            separatorDetector
+            separatorDetector,
+            dataValidationService // WSTRZYKNIĘTA NOWA ZALEŻNOŚĆ DO ORKIESTRATORA
         );
 
         // 4. Inicjalizacja komponentów widoku prezentacji (DOM)

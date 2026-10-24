@@ -1,5 +1,6 @@
 import { IConversionStateData } from '../../application/ConversionState';
 import { SqlDataType } from '../../domain/enums/SqlDataType';
+import { IValidationError } from '../../domain/contracts/IValidationError';
 
 /**
  * Kontrakt dla komponentu obsługującego wgranie pliku CSV oraz parametry początkowe.
@@ -79,4 +80,9 @@ export interface IStatusNotificationView {
      * Wyświetla powiadomienie o błędzie.
      */
     showError(message: string): void;
+
+    /**
+     * Wyświetla zbiór ostrzeżeń (warnings) z procesu walidacji danych.
+     */
+    showWarnings(warnings: ReadonlyArray<IValidationError>): void;
 }
