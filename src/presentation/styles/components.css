@@ -275,6 +275,12 @@ body {
     border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
+.notification-warning {
+    background-color: var(--warning-bg);
+    color: var(--warning-color);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
 .app-footer {
     text-align: center;
     color: var(--text-muted);
