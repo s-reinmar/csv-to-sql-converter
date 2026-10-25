@@ -1,4 +1,6 @@
 .idea
+.aiassistant
+.aiassistant/rules
 
 docs/steps/postMvp
 docs/steps/preMvp
