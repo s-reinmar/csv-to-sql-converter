@@ -6,11 +6,11 @@ Poniżej znajduje się szczegółowy raport podsumowujący kroki od 30 do 34, kt
 
 ## Krok 30 (src/presentation/contracts/IViewComponents.ts): Kontrakty komponentów widoku
 
-* **Opis:** Definicja interfejsów (`IFileUploadView`, `ISchemaEditorView`, `IStatusNotificationView`) określających kontrakt komunikacyjny pomiędzy kontrolerem a poszczególnymi sekcjami interfejsu HTML.
+* **Opis:** Definicja interfejsów (`IFileUploadView`, `ISchemaEditorView`, `IStatusNotificationView.ts`) określających kontrakt komunikacyjny pomiędzy kontrolerem a poszczególnymi sekcjami interfejsu HTML.
 * **Kluczové elementy:**
   * `IFileUploadView`: Rejestracja zdarzenia wyboru pliku, renderowanie stanu zablokowania kontrolek w trakcie ładowania oraz obsługa błędów.
   * `ISchemaEditorView`: Rejestracja nasłuchiwaczy zmian nazw kolumn, typów danych, flag NULL / NOT NULL oraz nazwy tabeli docelowej.
-  * `IStatusNotificationView`: Rejestracja akcji zapisu pliku `.sql`, podgląd kodu oraz system powiadomień o sukcesach i błędach.
+  * `IStatusNotificationView.ts`: Rejestracja akcji zapisu pliku `.sql`, podgląd kodu oraz system powiadomień o sukcesach i błędach.
 * **Weryfikacja [SOLID / TS]:** Zgodność z zasadą pojedynczej odpowiedzialności (SRP) oraz odwróceniem zależności (DIP). Interfejsy ściśle oddzielają logikę kontrolera od konkretnych elementów DOM.
 
 ---
@@ -41,7 +41,7 @@ Poniżej znajduje się szczegółowy raport podsumowujący kroki od 30 do 34, kt
 
 ## Krok 33 (src/presentation/components/StatusNotificationView.ts): Podgląd SQL i powiadomienia
 
-* **Opis:** Implementacja interfejsu `IStatusNotificationView` odpowiedzialna za prezentację wygenerowanego kodu SQL oraz zarządzanie panelem powiadomień użytkownika.
+* **Opis:** Implementacja interfejsu `IStatusNotificationView.ts` odpowiedzialna za prezentację wygenerowanego kodu SQL oraz zarządzanie panelem powiadomień użytkownika.
 * **Kluczowe funkcjonalności:**
   * Renderowanie zawartości wygenerowanego skryptu SQL w dedykowanym bloku podglądu z automatycznym ukrywaniem sekcji, jeśli brak kodu.
   * Aktywacja i zmiana etykiety przycisku zapisu pliku (`Zapisz plik .sql` / `Zapisywanie...`).

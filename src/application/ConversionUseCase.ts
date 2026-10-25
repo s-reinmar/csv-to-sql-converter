@@ -9,7 +9,7 @@ import { ISeparatorDetector } from '../domain/contracts/ISeparatorDetector';
 
 /**
  * Główny orkiestrator przepływu pracy (Use Case) dla konwersji CSV do SQL.
- * Koordynuje wczytywanie pliku, wnioskowanie typów, modyfikacje schematu,
+ * Koordynuje wczytywanie pliku, wnioskowanie typów, modyfikacje schematu, walidację danych,
  * generowanie kodu SQL oraz jego trwały zapis, utrzymując niemutowalny stan aplikacji.
  */
 export class ConversionUseCase {
@@ -21,7 +21,7 @@ export class ConversionUseCase {
         private readonly sqlGenerator: ISqlGenerator,
         private readonly sqlFileRepository: ISqlFileRepository,
         private readonly schemaOverrideService: SchemaOverrideService,
-        private readonly separatorDetector: ISeparatorDetector
+        private readonly separatorDetector: ISeparatorDetector,
     ) {
         this.currentState = new ConversionState();
     }
@@ -34,7 +34,8 @@ export class ConversionUseCase {
     }
 
     /**
-     * Wczytuje i sparsuje zawartość pliku CSV, uruchamia detekcję typów i inicjalizuje schemat tabeli.
+     * Wczytuje i sparsuje zawartość pliku CSV, uruchamia detekcję typów, wykonuje walidację danych,
+     * i inicjalizuje schemat tabeli.
      *
      * @param fileContent Surowa treść pliku CSV.
      * @param fileName Nazwa pliku wejściowego.

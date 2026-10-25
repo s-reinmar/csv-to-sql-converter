@@ -1,5 +1,6 @@
 import { IStatusNotificationView } from '../contracts/IViewComponents';
 import { IConversionStateData } from '../../application/ConversionState';
+import { IValidationError } from '../../domain/contracts/IValidationError';
 
 /**
  * Komponent widoku odpowiedzialny za wyświetlanie podglądu wygenerowanego kodu SQL,
@@ -86,6 +87,13 @@ export class StatusNotificationView implements IStatusNotificationView {
     }
 
     /**
+     * Wyświetla ostrzeżenia dotyczące danych wejściowych.
+     */
+    public showWarnings(warnings: ReadonlyArray<IValidationError>): void {
+        warnings.forEach(({ message }) => this.addNotification(message, 'warning'));
+    }
+
+    /**
      * Wiąże zdarzenie kliknięcia przycisku zapisu pliku SQL.
      */
     private bindEvents(): void {
@@ -105,7 +113,7 @@ export class StatusNotificationView implements IStatusNotificationView {
     /**
      * Tworzy i wstrzykuje element powiadomienia do DOM z automatycznym czyszczeniem.
      */
-    private addNotification(message: string, type: 'success' | 'error'): void {
+    private addNotification(message: string, type: 'success' | 'error' | 'warning'): void {
         // Unikanie duplikatów identycznych komunikatów
         const existingNotifications = this.notificationRegion.querySelectorAll('.notification');
         for (const item of Array.from(existingNotifications)) {

@@ -17,12 +17,12 @@ import { AppController } from './presentation/controllers/AppController';
 import { SeparatorDetector } from './domain/services/SeparatorDetector';
 
 /**
- * Punkt wejścia aplikacji (Composition Root) - Krok 35.
+ * Punkt wejścia aplikacji (Composition Root).
  * Inicjalizuje kontener Dependency Injection oraz spina wszystkie warstwy aplikacji.
  */
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        // 0. Inicjalizacja serwisu normalizacji nazw oraz detektora separatora
+        // 0. Inicjalizacja bezstanowych serwisów pomocniczych
         const normalizationService = new NameNormalizationService();
         const separatorDetector = new SeparatorDetector();
 
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sqlGenerator,
             sqlFileRepository,
             schemaOverrideService,
-            separatorDetector
+            separatorDetector,
         );
 
         // 4. Inicjalizacja komponentów widoku prezentacji (DOM)

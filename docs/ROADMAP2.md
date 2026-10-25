@@ -21,19 +21,12 @@ W pierwszej kolejności skupiamy się na stabilności parsowania, precyzji wykry
     - Zastąpienie statycznego przekazywania separatora wywołaniem detektora w `ConversionUseCase`.
   - **Zależności:** Brak.
 
-- [ ] **KROK 1.3: Wybór separatora w UI (Fallback)**
-  - **Powiązanie z Todoist:** *Obsługa różnych separatorów CSV: Dodanie możliwości wyboru separatora (np. przecinek, średnik, tabulator) w interfejsie użytkownika.*
-  - **Cel i DoD:** 
-    - Zaktualizowanie interfejsu `IFileUploadView` oraz modyfikacja DOM (nowy `<select>` z opcją "Auto-detect" jako domyślną).
-    - Zaktualizowanie `AppController`, aby przekazywał wymuszony separator (lub null dla auto-detekcji) do `ConversionUseCase`.
-  - **Zależności:** Wykonany KROK 1.2 (Detekcja musi działać jako wariant domyślny).
-
-- [ ] **KROK 1.4: Rozszerzona walidacja danych wejściowych**
+- [ ] **KROK 1.3: Rozszerzona walidacja danych wejściowych**
   - **Powiązanie z Todoist:** *Walidacja danych wejściowych (np. brakujące wartości, niepoprawne formaty dat).*
   - **Cel i DoD:** 
     - Utworzenie `DataValidationService` działającego po tokenizacji.
     - Zdefiniowanie interfejsu dla obiektów błędów (np. `IValidationError`).
-    - Aktualizacja interfejsu powiadomień (`IStatusNotificationView`), by obok błędu krytycznego móc wyświetlać zbiór ostrzeżeń (warnings) o np. pominiętych wierszach lub wymuszonym zrzutowaniu na `NULL`.
+    - Aktualizacja interfejsu powiadomień (`IStatusNotificationView.ts`), by obok błędu krytycznego móc wyświetlać zbiór ostrzeżeń (warnings) o np. pominiętych wierszach lub wymuszonym zrzutowaniu na `NULL`.
   - **Zależności:** Brak (niezależny serwis domenowy).
 
 ## Faza 2: Skalowalność, Wydajność i Asynchroniczność (Przetwarzanie Dużych Danych)
@@ -43,7 +36,7 @@ Przebudowa warstwy aplikacji i infrastruktury w celu obsługi dużych i licznych
   - **Powiązanie z Todoist:** *Przetwarzanie plików w tle (asynchronicznie) z informowaniem użytkownika o postępie.*
   - **Cel i DoD:** 
     - Wydzielenie ciężkich operacji CPU (`CsvParser`, `TypeInferenceEngine`, `SqlGenerator`) do osobnego wątku za pomocą Web Workerów (wymóg techniczny, by nie łamać izolacji UI blokując DOM).
-    - Rozszerzenie `IStatusNotificationView` o metody wspierające pasek postępu / procenty.
+    - Rozszerzenie `IStatusNotificationView.ts` o metody wspierające pasek postępu / procenty.
     - Aktualizacja `ConversionState` o pola `progressPercentage` i `isProcessing`.
   - **Zależności:** Wykonana Faza 1 (aby przenoszona logika była kompletna i stabilna).
 
