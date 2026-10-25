@@ -86,3 +86,4 @@ export interface IStatusNotificationView {
      */
     showWarnings(warnings: ReadonlyArray<IValidationError>): void;
 }
+

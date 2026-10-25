@@ -1,5 +1,6 @@
 import { ICsvParseResult } from '../domain/contracts/ICsvParser';
 import { ITableSchema } from '../domain/models/TableSchema';
+import { IValidationError } from '../domain/contracts/IValidationError';
 
 /**
  * Interfejs definiujący niemutowalną strukturę stanu aplikacji konwersji CSV do SQL.
@@ -10,13 +11,14 @@ export interface IConversionStateData {
     readonly tableSchema: ITableSchema | null;
     readonly generatedSql: string | null;
     readonly savedFilePath: string | null;
+    readonly validationWarnings: ReadonlyArray<IValidationError>;  // ← Nowe pole
     readonly isLoading: boolean;
     readonly errorMessage: string | null;
 }
 
 /**
  * Niemutowalny kontener stanu (State Container) zarządzający danymi wejściowymi CSV,
- * schematem tabeli, wygenerowanym kodem SQL oraz statusami błędów i ładowania.
+ * schematem tabeli, wygenerowanym kodem SQL, ostrzeżeniami walidacyjnymi oraz statusami błędów i ładowania.
  * Każda modyfikacja stanu zwraca nową instancję klasy (wzorzec Immutability).
  */
 export class ConversionState {
@@ -32,6 +34,7 @@ export class ConversionState {
             tableSchema: null,
             generatedSql: null,
             savedFilePath: null,
+            validationWarnings: [],  // ← Inicjalizacja pustej tablicy
             isLoading: false,
             errorMessage: null,
             ...(initialData ? initialData : {})
@@ -49,7 +52,7 @@ export class ConversionState {
      * Tworzy i zwraca nową instancję kontenera z zaktualizowanymi polami,
      * zachowując nienaruszalność dotychczasowego stanu.
      *
-     * @partials Fragmenty stanu do nadpisania.
+     * @param partialState Fragmenty stanu do nadpisania.
      */
     public cloneWith(partialState: Partial<IConversionStateData>): ConversionState {
         return new ConversionState({

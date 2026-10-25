@@ -1,3 +1,10 @@
+/**
+ * @file AppController.ts
+ * @description Główny kontroler aplikacji łączący warstwę prezentacji (widoki DOM)
+ * z warstwą aplikacji (ConversionUseCase), orkiestrujący przepływ zdarzeń
+ * i automatycznie wyświetlający ostrzeżenia walidacyjne.
+ */
+
 import { ConversionUseCase } from '../../application/ConversionUseCase';
 import { IFileUploadView, ISchemaEditorView, IStatusNotificationView } from '../contracts/IViewComponents';
 import { BrowserFileReader } from '../../infrastructure/BrowserFileReader';
@@ -6,6 +13,10 @@ import { SqlDataType } from '../../domain/enums/SqlDataType';
 /**
  * Główny kontroler aplikacji (AppController) łączący warstwę prezentacji (widoki DOM)
  * z warstwą aplikacji (ConversionUseCase) i infrastruktury (BrowserFileReader).
+ * Odpowiada za:
+ * - Wiązanie zdarzeń z komponentów widoku do metod use case'a
+ * - Zbieranie i wyświetlanie ostrzeżeń walidacyjnych
+ * - Zarządzanie stanem użytkownika poprzez updateViews()
  */
 export class AppController {
     private fileReader: BrowserFileReader;
@@ -23,6 +34,7 @@ export class AppController {
 
     /**
      * Wiąże zdarzenia z komponentów widoku do metod kontrolera.
+     * Każdy listener wykonuje logikę use case'a i odświeża widoki.
      */
     private bindEvents(): void {
         // 1. Obsługa wyboru pliku CSV w formularzu wgrania
@@ -36,10 +48,18 @@ export class AppController {
                     this.conversionUseCase.updateTableName(tableName.trim());
                 }
 
+                // ← NOWE: Wyciągnięcie ostrzeżeń walidacyjnych ze stanu
+                const currentState = this.conversionUseCase.getState();
+                if (currentState.validationWarnings.length > 0) {
+                    this.statusNotificationView.showWarnings(currentState.validationWarnings);
+                }
+
                 this.statusNotificationView.showSuccess(`Plik "${file.name}" został pomyślnie sparsowany.`);
                 this.updateViews();
             } catch (error: unknown) {
-                const message = error instanceof Error ? error.message : 'Nieznany błąd podczas wczytywania pliku.';
+                const message = error instanceof Error
+                    ? error.message
+                    : 'Nieznany błąd podczas wczytywania pliku.';
                 this.fileUploadView.showError(message);
                 this.statusNotificationView.showError(message);
                 this.updateViews();
@@ -50,9 +70,15 @@ export class AppController {
         this.schemaEditorView.onTableNameChanged((newTableName: string) => {
             try {
                 this.conversionUseCase.updateTableName(newTableName);
+
+                // ← NOWE: Wyświetlenie ostrzeżeń po zmianie schematu
+                this.displayValidationWarningsIfAny();
+
                 this.updateViews();
             } catch (error: unknown) {
-                const message = error instanceof Error ? error.message : 'Błąd zmiany nazwy tabeli.';
+                const message = error instanceof Error
+                    ? error.message
+                    : 'Błąd zmiany nazwy tabeli.';
                 this.statusNotificationView.showError(message);
             }
         });
@@ -61,9 +87,15 @@ export class AppController {
         this.schemaEditorView.onColumnNameChanged((originalName: string, newName: string) => {
             try {
                 this.conversionUseCase.updateColumnName(originalName, newName);
+
+                // ← NOWE: Wyświetlenie ostrzeżeń po zmianie schematu
+                this.displayValidationWarningsIfAny();
+
                 this.updateViews();
             } catch (error: unknown) {
-                const message = error instanceof Error ? error.message : 'Błąd zmiany nazwy kolumny.';
+                const message = error instanceof Error
+                    ? error.message
+                    : 'Błąd zmiany nazwy kolumny.';
                 this.statusNotificationView.showError(message);
             }
         });
@@ -72,9 +104,15 @@ export class AppController {
         this.schemaEditorView.onColumnTypeChanged((originalName: string, newType: SqlDataType | undefined) => {
             try {
                 this.conversionUseCase.overrideColumnType(originalName, newType);
+
+                // ← NOWE: Wyświetlenie ostrzeżeń po zmianie schematu
+                this.displayValidationWarningsIfAny();
+
                 this.updateViews();
             } catch (error: unknown) {
-                const message = error instanceof Error ? error.message : 'Błąd nadpisania typu kolumny.';
+                const message = error instanceof Error
+                    ? error.message
+                    : 'Błąd nadpisania typu kolumny.';
                 this.statusNotificationView.showError(message);
             }
         });
@@ -83,9 +121,15 @@ export class AppController {
         this.schemaEditorView.onColumnNullableChanged((originalName: string, isNullable: boolean) => {
             try {
                 this.conversionUseCase.toggleColumnNullable(originalName, isNullable);
+
+                // ← NOWE: Wyświetlenie ostrzeżeń po zmianie schematu
+                this.displayValidationWarningsIfAny();
+
                 this.updateViews();
             } catch (error: unknown) {
-                const message = error instanceof Error ? error.message : 'Błąd zmiany flagi NULL.';
+                const message = error instanceof Error
+                    ? error.message
+                    : 'Błąd zmiany flagi NULL.';
                 this.statusNotificationView.showError(message);
             }
         });
@@ -97,7 +141,9 @@ export class AppController {
                 this.statusNotificationView.showSuccess(`Plik SQL zapisany pomyślnie: ${savedPath}`);
                 this.updateViews();
             } catch (error: unknown) {
-                const message = error instanceof Error ? error.message : 'Błąd podczas zapisu pliku SQL.';
+                const message = error instanceof Error
+                    ? error.message
+                    : 'Błąd podczas zapisu pliku SQL.';
                 this.statusNotificationView.showError(message);
                 this.updateViews();
             }
@@ -106,11 +152,23 @@ export class AppController {
 
     /**
      * Odświeża stan wszystkich widoków na podstawie aktualnego stanu z ConversionUseCase.
+     * Wywoływana po każdej operacji na danych lub schemacie.
      */
     private updateViews(): void {
         const currentState = this.conversionUseCase.getState();
         this.fileUploadView.render(currentState);
         this.schemaEditorView.render(currentState);
         this.statusNotificationView.render(currentState);
+    }
+
+    /**
+     * Pomocnicza metoda sprawdzająca, czy istnieją ostrzeżenia walidacyjne,
+     * i jeśli tak, wyświetlająca je w panelu powiadomień.
+     */
+    private displayValidationWarningsIfAny(): void {
+        const currentState = this.conversionUseCase.getState();
+        if (currentState.validationWarnings && currentState.validationWarnings.length > 0) {
+            this.statusNotificationView.showWarnings(currentState.validationWarnings);
+        }
     }
 }

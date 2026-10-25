@@ -21,7 +21,7 @@ W pierwszej kolejności skupiamy się na stabilności parsowania, precyzji wykry
     - Zastąpienie statycznego przekazywania separatora wywołaniem detektora w `ConversionUseCase`.
   - **Zależności:** Brak.
 
-- [ ] **KROK 1.3: Rozszerzona walidacja danych wejściowych**
+- [X] **KROK 1.3: Rozszerzona walidacja danych wejściowych**
   - **Powiązanie z Todoist:** *Walidacja danych wejściowych (np. brakujące wartości, niepoprawne formaty dat).*
   - **Cel i DoD:** 
     - Utworzenie `DataValidationService` działającego po tokenizacji.
