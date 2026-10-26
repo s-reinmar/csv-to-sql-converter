@@ -1,31 +1,23 @@
-# CSV to SQL Converter (TypeScript) - MVP
+# CSV to SQL Converter (TypeScript) - v1.1.0
 
-Aplikacja webowa w języku **TypeScript** służąca do konwersji plików wsadowych **CSV** do formatu SQL (`CREATE TABLE` + `INSERT INTO`). Narzędzie automatycznie rozpoznaje typy danych na podstawie zawartości kolumn, umożliwia ich ręczną korektę w interaktywnym formularzu oraz zapisuje wynikowy skrypt bezpośrednio w katalogu `public/resources/`.
+Aplikacja webowa w języku **TypeScript** służąca do konwersji plików wsadowych **CSV** do formatu SQL (`CREATE TABLE` + `INSERT INTO`). Narzędzie automatycznie rozpoznaje typy danych na podstawie zawartości kolumn, normalizuje nazwy (usuwając polskie znaki i znaki specjalne do formatu `snake_case`), wykrywa separator, umożliwia interaktywną korektę schematu (w tym zmianę kolejności kolumn) oraz zapisuje wynikowy skrypt bezpośrednio w katalogu `public/resources/`.
 
-Projekt został zrealizowany jako **Minimum Viable Product (MVP)** w oparciu o rygorystyczne typowanie TypeScript, wzorce projektowe **Clean Architecture**, **Domain-Driven Design (DDD)** oraz zasady **SOLID**.
-
-Projekt realizuje następujące założenia:
-- **Headless Architecture:** Całkowite odseparowanie logiki domenowej i aplikacyjnej od warstwy widoku HTML DOM.
-- **Strict TypeScript:** Rygorystyczne typowanie (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, całkowity zakaz używania typu `any`).
-- **Interface-Driven Development (DIP):** Komunikacja pomiędzy warstwami odbywa się wyłącznie za pośrednictwem jawnych kontraktów (interfejsów).
-- **Niskie SLOC i SRP:** Podział logiki na małe, atomowe klasy i metody o pojedynczej odpowiedzialności.
-- **Ciemny motyw graficzny:** Interfejs użytkownika w kolorystyce czarno-niebieskiej z jasnoniebieskimi akcentami, zapewniający komfort pracy w warunkach słabego oświetlenia.
-- **Wersja 1.0.0 (MVP):** Projekt jest w pełni funkcjonalny, przetestowany i gotowy do użycia w środowisku przeglądarkowym.
+Projekt został zrealizowany z zachowaniem rygorystycznych standardów inżynieryjnych: wzorców **Clean Architecture**, **Domain-Driven Design (DDD)** oraz zasad **SOLID**.
 
 ---
 
-## Założenia Architektoniczne
-
-Projekt realizuje zasady **Clean Architecture**, **Domain-Driven Design (DDD)** oraz **SOLID**:
-- **Headless Architecture:** Odseparowanie logiki od widoku DOM.
-- **Strict TypeScript:** Pełne bezpieczeństwo typów.
-- **Interface-Driven Development (DIP):** Komunikacja przez kontrakty.
-- **Niskie SLOC i SRP:** Atomowe klasy o pojedynczej odpowiedzialności.
+## 🏗️ Założenia Architektoniczne
+Projekt realizuje następujące założenia projektowe:
+* **Headless Architecture:** Całkowite odseparowanie logiki domenowej i aplikacyjnej od warstwy widoku HTML DOM.
+* **Strict TypeScript:** Rygorystyczne typowanie (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, całkowity zakaz używania typu `any`).
+* **Interface-Driven Development (DIP):** Komunikacja pomiędzy warstwami odbywa się wyłącznie za pośrednictwem jawnych kontraktów (interfejsów).
+* **Niskie SLOC i SRP:** Podział logiki na małe, atomowe klasy i metody o pojedynczej odpowiedzialności.
+* **Ciemny motyw graficzny:** Interfejs użytkownika w kolorystyce czarno-niebieskiej z jasnoniebieskimi akcentami, zapewniający komfort pracy w warunkach słabego oświetlenia.
 
 ---
 
-## Struktura Katalogów
-
+## 📁 Struktura Katalogów (WebStorm)
+Struktura projektu zorganizowana zgodnie z Clean Architecture:
 ```text
 csv-to-sql-converter/
 ├── package.json
@@ -39,23 +31,23 @@ csv-to-sql-converter/
 │       └── sample.csv              # Testowy plik wsadowy CSV
 └── src/
     ├── main.ts                     # Punkt wejścia i Composition Root (DI)
-    ├── domain/                     # Czysta logika biznesowa
+    ├── domain/                     # Czysta logika biznesowa (Zero wiedzy o UI / I/O)
     │   ├── enums/
     │   ├── models/
     │   ├── contracts/              # Interfejsy domenowe (DIP)
-    │   └── services/               # Parsowanie, wnioskowanie typów i generowanie SQL
+    │   └── services/               # Parsowanie, normalizacja, wnioskowanie typów i generowanie SQL
     ├── infrastructure/             # Operacje wejścia/wyjścia (I/O) i zapis plików
-    ├── application/                # Przypadki użycia i zarządzanie stanem (Headless)
+    ├── application/                # Przypadki użycia, zarządzanie stanem i modyfikacje schematu
     └── presentation/               # Warstwa widoku (DOM) i stylizacja
         ├── styles/
         ├── contracts/
-        ├── components/
-        └── controllers/
+        ├── components/             # FileUploadView, SchemaEditorView, StatusNotificationView
+        └── controllers/            # AppController
 ```
 
 ---
 
-## Status Realizacji Projektu (MVP - Fazy 1–9 ukończone)
+## Status Realizacji Projektu - radmap v1.0.0 - zakończone
 
 - [x] **Faza 1: Konfiguracja środowiska i projektu w WebStorm (Zakończona)**
   Środowisko projektowe, pakiet `package.json`, konfiguracja `tsconfig.json` oraz middleware zapisu plików w `vite.config.ts` zostały w pełni skonfigurowane.
@@ -78,12 +70,12 @@ csv-to-sql-converter/
 
 ---
 
-## CSV to SQL Converter (Faza Post-MVP)
+## Usprawnienia Post-MVP - roadmap v1.1.0 - zakończone
 
-- [X] KROK 1.1: Automatyczna normalizacja nazw tabel i kolumn
-- [X] KROK 1.2: Automatyczna detekcja separatora pliku CSV
-- [X] KROK 1.3: Rozszerzona walidacja danych wejściowych
-- [X] KROK 1.4: Wprowadzenie możliwości zmiany kolejności kolumn
+- [X] KROK 1.1: Automatyczna normalizacja nazw tabel i kolumn (usuwanie polskich znaków, zamiana na snake_case, np. IMIĘ $\rightarrow$ imie).
+- [X] KROK 1.2: Automatyczna detekcja separatora pliku CSV na podstawie heurystyki pierwszej próbki.
+- [X] KROK 1.3: Rozszerzona walidacja danych wejściowych i prezentacja ostrzeżeń (warnings).
+- [X] KROK 1.4: Dynamiczna zmiana kolejności kolumn w edytorze schematu (↑ / ↓) z natychmiastową regeneracją kodu SQL.
 
 ---
 
