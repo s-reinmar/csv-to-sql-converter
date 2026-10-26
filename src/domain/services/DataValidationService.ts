@@ -4,12 +4,12 @@
  * i zbieranie ostrzeżeń dotyczących struktury, zawartości oraz typów.
  */
 
-import { IDataValidator } from '../contracts/IDataValidator';
-import { IValidationError } from '../contracts/IValidationError';
-import { ICsvParseResult } from '../contracts/ICsvParser';
-import { ITableSchema } from '../models/TableSchema';
-import { TypeMatchers } from './TypeMatchers';
-import { SqlDataType } from '../enums/SqlDataType';
+import {IDataValidator} from '../contracts/IDataValidator';
+import {IValidationError} from '../contracts/IValidationError';
+import {ICsvParseResult} from '../contracts/ICsvParser';
+import {ITableSchema} from '../models/TableSchema';
+import {TypeMatchers} from './TypeMatchers';
+import {SqlDataType} from '../enums/SqlDataType';
 
 /**
  * Implementacja serwisu walidacyjnego analizującego sparsowane dane CSV
@@ -78,10 +78,16 @@ export class DataValidationService implements IDataValidator {
         schema: ITableSchema,
         warnings: IValidationError[]
     ): void {
-        for (const column of schema.columns) {
-            const columnData = this.extractColumnValues(parseResult, column.originalName);
-            this.validateColumnValues(column.originalName, columnData, column.detectedType, warnings);
-        }
+        schema.columns.forEach((column, columnIndex) => {
+            const columnData = this.extractColumnValues(parseResult, columnIndex);
+            this.validateColumnValues(
+                column.originalName,
+                columnData,
+                column.userOverrideType ?? column.detectedType,
+                column.isNullable,
+                warnings
+            );
+        });
     }
 
     /**
@@ -91,26 +97,37 @@ export class DataValidationService implements IDataValidator {
         columnName: string,
         values: ReadonlyArray<string>,
         detectedType: SqlDataType,
+        isNullable: boolean,
         warnings: IValidationError[]
     ): void {
         const mismatchedRows: number[] = [];
+        const nullRows: number[] = [];
 
         values.forEach((value, idx) => {
-            // Pomijamy puste wartości
-            if (!value || value.trim() === '') {
+            const isTextType = detectedType === SqlDataType.VARCHAR || detectedType === SqlDataType.TEXT;
+            const isNull = value === '' || (!isTextType && value.trim().toUpperCase() === 'NULL');
+            if (isNull) {
+                if (!isNullable) {
+                    nullRows.push(idx);
+                }
                 return;
             }
 
             const matches = this.valueMatchesType(value, detectedType);
             if (!matches) {
-                mismatchedRows.push(idx + 1); // +1 bo wiersze są 1-indexed
+                mismatchedRows.push(idx);
             }
         });
 
-        if (mismatchedRows.length > 0 && mismatchedRows.length <= values.length * 0.1) {
-            // Ostrzeżenie tylko jeśli <= 10% wierszy ma niezgodny typ
+        if (nullRows.length > 0) {
             warnings.push({
-                message: `Kolumna "${columnName}" (typ: ${detectedType}) zawiera ${mismatchedRows.length} wartość/wartości niezgodne z typem (wiersze: ${mismatchedRows.slice(0, 3).join(', ')}${mismatchedRows.length > 3 ? ', ...' : ''}).`
+                message: `Kolumna "${columnName}" ma wartości NULL mimo ustawienia NOT NULL (wiersze: ${this.formatRowNumbers(nullRows)}).`
+            });
+        }
+
+        if (mismatchedRows.length > 0) {
+            warnings.push({
+                message: `Kolumna "${columnName}" (typ: ${detectedType}) zawiera ${mismatchedRows.length} wartość/wartości niezgodne z typem (wiersze: ${this.formatRowNumbers(mismatchedRows)}).`
             });
         }
     }
@@ -146,9 +163,14 @@ export class DataValidationService implements IDataValidator {
      */
     private extractColumnValues(
         parseResult: ICsvParseResult,
-        columnName: string
+        columnIndex: number
     ): ReadonlyArray<string> {
-        return parseResult.rows.map(row => row.values[columnName] ?? '');
+        return parseResult.rows.map(row => row.cells[columnIndex]?.rawValue ?? '');
+    }
+
+    private formatRowNumbers(indexes: ReadonlyArray<number>): string {
+        const rows = indexes.slice(0, 3).map(index => index + 1);
+        return `${rows.join(', ')}${indexes.length > 3 ? ', ...' : ''}`;
     }
 
     /**

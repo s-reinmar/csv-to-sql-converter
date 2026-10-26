@@ -1,4 +1,4 @@
-import { SqlDataType } from '../enums/SqlDataType';
+import {SqlDataType} from '../enums/SqlDataType';
 
 /**
  * Serwis odpowiedzialny za bezpieczne formatowanie i escape'owanie wartości komórek CSV
@@ -17,26 +17,34 @@ export class SqlValueEscaper {
             return 'NULL';
         }
 
-        // Zabezpieczenie typu za pomocą operatora non-null (!) lub optional chaining
-        const trimmed = (rawValue as string).trim();
-        if (trimmed.toUpperCase() === 'NULL') {
-            return 'NULL';
-        }
-
+        const value = rawValue ?? '';
+        const trimmed = value.trim();
         switch (dataType) {
             case SqlDataType.INTEGER:
+                if (trimmed.toUpperCase() === 'NULL') {
+                    return 'NULL';
+                }
                 return this.formatInteger(trimmed);
             case SqlDataType.DECIMAL:
+                if (trimmed.toUpperCase() === 'NULL') {
+                    return 'NULL';
+                }
                 return this.formatDecimal(trimmed);
             case SqlDataType.BOOLEAN:
+                if (trimmed.toUpperCase() === 'NULL') {
+                    return 'NULL';
+                }
                 return this.formatBoolean(trimmed);
             case SqlDataType.DATE:
             case SqlDataType.DATETIME:
+                if (trimmed.toUpperCase() === 'NULL') {
+                    return 'NULL';
+                }
                 return this.formatDateOrDateTime(trimmed);
             case SqlDataType.VARCHAR:
             case SqlDataType.TEXT:
             default:
-                return this.formatString(trimmed);
+                return this.formatString(value);
         }
     }
 
@@ -47,19 +55,17 @@ export class SqlValueEscaper {
         if (value === null || value === undefined) {
             return true;
         }
-        return value.trim() === '';
+        return value === '';
     }
 
     /**
      * Formatuje wartość liczbową całkowitą (INTEGER).
      */
     private formatInteger(value: string): string {
-        const cleaned = value.replace(/\s+/g, '');
-        const parsed = Number(cleaned);
-        if (isNaN(parsed)) {
+        if (!/^-?\d+$/.test(value)) {
             return this.formatString(value);
         }
-        return Math.trunc(parsed).toString();
+        return value;
     }
 
     /**
@@ -67,12 +73,11 @@ export class SqlValueEscaper {
      * Obsługuje zarówno kropkę, jak i przecinek jako separator dziesiętny.
      */
     private formatDecimal(value: string): string {
-        const normalized = value.replace(/\s+/g, '').replace(',', '.');
-        const parsed = Number(normalized);
-        if (isNaN(parsed)) {
+        const normalized = value.replace(',', '.');
+        if (!/^-?\d+(?:\.\d+)?$/.test(normalized)) {
             return this.formatString(value);
         }
-        return parsed.toString();
+        return normalized;
     }
 
     /**

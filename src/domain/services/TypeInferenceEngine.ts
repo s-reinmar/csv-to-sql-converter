@@ -4,13 +4,13 @@
  * wnioskowanie typów danych SQL oraz budowę schematu tabeli na podstawie danych z pliku CSV.
  */
 
-import { ITypeInferenceEngine } from '../contracts/ITypeInferenceEngine';
-import { SqlDataType } from '../enums/SqlDataType';
-import { ITableSchema } from '../models/TableSchema';
-import { IColumnDefinition } from '../models/ColumnDefinition';
-import { ICsvRow } from '../models/CsvRow';
-import { TypeMatchers } from './TypeMatchers';
-import { INameNormalizationService } from '../contracts/INameNormalizationService';
+import {ITypeInferenceEngine} from '../contracts/ITypeInferenceEngine';
+import {SqlDataType} from '../enums/SqlDataType';
+import {ITableSchema} from '../models/TableSchema';
+import {IColumnDefinition} from '../models/ColumnDefinition';
+import {ICsvRow} from '../models/CsvRow';
+import {TypeMatchers} from './TypeMatchers';
+import {INameNormalizationService} from '../contracts/INameNormalizationService';
 
 /**
  * Serwis domenowy realizujący wnioskowanie typów danych oraz struktury tabeli SQL.
@@ -68,7 +68,7 @@ export class TypeInferenceEngine implements ITypeInferenceEngine {
         }
 
         // 5. Analiza pod kątem długości tekstów dla VARCHAR vs TEXT
-        const maxLength = Math.max(...nonNullValues.map(val => val.length));
+        const maxLength = nonNullValues.reduce((max, value) => Math.max(max, value.length), 0);
         if (maxLength > 255) {
             return SqlDataType.TEXT;
         }
@@ -87,6 +87,7 @@ export class TypeInferenceEngine implements ITypeInferenceEngine {
         rows: ReadonlyArray<ICsvRow>,
         tableName: string
     ): ITableSchema {
+        const usedSqlNames = new Set<string>();
         const columns: IColumnDefinition[] = headers.map((header, colIndex) => {
             // Ekstrakcja próbek wartości dla danej kolumny ze wszystkich wierszy
             const columnValues = rows.map(row => {
@@ -95,14 +96,20 @@ export class TypeInferenceEngine implements ITypeInferenceEngine {
             });
 
             // Określenie czy kolumna zawiera jakiekolwiek wartości puste (NULL)
-            const hasEmptyValues = columnValues.some(val => !val || val.trim() === '');
+            const hasEmptyValues = columnValues.some(val => val === '');
             const isNullable = hasEmptyValues || rows.length === 0;
 
             // Wnioskowanie typu danych
             const detectedType = this.inferColumnType(columnValues);
 
             // Normalizacja nazwy kolumny do bezpiecznego identyfikatora SQL przy użyciu serwisu domenowego
-            const sqlName = this.normalizationService.normalizeColumnName(header);
+            const baseSqlName = this.normalizationService.normalizeColumnName(header);
+            let sqlName = baseSqlName;
+            let suffix = 2;
+            while (usedSqlNames.has(sqlName)) {
+                sqlName = `${baseSqlName}_${suffix++}`;
+            }
+            usedSqlNames.add(sqlName);
 
             return {
                 originalName: header,

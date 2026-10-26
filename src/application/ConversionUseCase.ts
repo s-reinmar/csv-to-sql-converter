@@ -4,16 +4,16 @@
  * z pełną integracją walidacji danych i zbieraniem ostrzeżeń.
  */
 
-import { ICsvParser } from '../domain/contracts/ICsvParser';
-import { ITypeInferenceEngine } from '../domain/contracts/ITypeInferenceEngine';
-import { ISqlGenerator } from '../domain/contracts/ISqlGenerator';
-import { ISqlFileRepository } from '../domain/contracts/ISqlFileRepository';
-import { ConversionState, IConversionStateData } from './ConversionState';
-import { SchemaOverrideService } from './SchemaOverrideService';
-import { SqlDataType } from '../domain/enums/SqlDataType';
-import { ISeparatorDetector } from '../domain/contracts/ISeparatorDetector';
-import { IDataValidator } from '../domain/contracts/IDataValidator';
-import { ITableSchema } from '../domain/models/TableSchema';
+import {ICsvParser} from '../domain/contracts/ICsvParser';
+import {ITypeInferenceEngine} from '../domain/contracts/ITypeInferenceEngine';
+import {ISqlGenerator} from '../domain/contracts/ISqlGenerator';
+import {ISqlFileRepository} from '../domain/contracts/ISqlFileRepository';
+import {ConversionState, IConversionStateData} from './ConversionState';
+import {SchemaOverrideService} from './SchemaOverrideService';
+import {SqlDataType} from '../domain/enums/SqlDataType';
+import {ISeparatorDetector} from '../domain/contracts/ISeparatorDetector';
+import {IDataValidator} from '../domain/contracts/IDataValidator';
+import {ITableSchema} from '../domain/models/TableSchema';
 
 /**
  * Główny orkiestrator przepływu pracy (Use Case) dla konwersji CSV do SQL.
@@ -59,7 +59,11 @@ export class ConversionUseCase {
             isLoading: true,
             errorMessage: null,
             fileName,
-            validationWarnings: []  // ← Reset ostrzeżeń z nowego wgrania
+            csvData: null,
+            tableSchema: null,
+            generatedSql: null,
+            savedFilePath: null,
+            validationWarnings: []
         });
 
         try {
@@ -203,7 +207,8 @@ export class ConversionUseCase {
 
         this.currentState = this.currentState.cloneWith({
             isLoading: true,
-            errorMessage: null
+            errorMessage: null,
+            savedFilePath: null
         });
 
         try {

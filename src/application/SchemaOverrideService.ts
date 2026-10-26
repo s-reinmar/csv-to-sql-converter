@@ -1,7 +1,7 @@
-import { ITableSchema } from '../domain/models/TableSchema';
-import { IColumnDefinition } from '../domain/models/ColumnDefinition';
-import { SqlDataType } from '../domain/enums/SqlDataType';
-import { INameNormalizationService } from '../domain/contracts/INameNormalizationService';
+import {ITableSchema} from '../domain/models/TableSchema';
+import {IColumnDefinition} from '../domain/models/ColumnDefinition';
+import {SqlDataType} from '../domain/enums/SqlDataType';
+import {INameNormalizationService} from '../domain/contracts/INameNormalizationService';
 
 /**
  * Serwis aplikacyjny odpowiedzialny za obsługę modyfikacji schematu tabeli (Schema Overrides)
@@ -10,7 +10,8 @@ import { INameNormalizationService } from '../domain/contracts/INameNormalizatio
 export class SchemaOverrideService {
     constructor(
         private readonly normalizationService: INameNormalizationService
-    ) {}
+    ) {
+    }
 
     /**
      * Aktualizuje nazwę kolumny o wskazanym indeksie lub oryginalnej nazwie,
@@ -31,6 +32,9 @@ export class SchemaOverrideService {
         }
 
         const safeSqlName = this.normalizationService.normalizeColumnName(trimmedName);
+        if (schema.columns.some(col => col.originalName !== targetOriginalName && col.sqlName === safeSqlName)) {
+            throw new Error(`Nazwa SQL "${safeSqlName}" jest już używana przez inną kolumnę.`);
+        }
 
         const updatedColumns: ReadonlyArray<IColumnDefinition> = schema.columns.map((col) => {
             if (col.originalName === targetOriginalName) {
