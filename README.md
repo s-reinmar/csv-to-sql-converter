@@ -1,6 +1,8 @@
 # 🚀 CSV to SQL Converter (TypeScript) - v1.1.0
 
-![Opis grafiki](public/pwa-512x512.png)
+<p align="center">
+  <img src="public/convert-csv-to-sql.jpg" alt="PWA Preview">
+</p>
 
 Zaawansowana, lekka aplikacja webowa napisana w czystym **TypeScript**, służąca do konwersji plików wsadowych **CSV** do formatu SQL (`CREATE TABLE` + `INSERT INTO`). Narzędzie automatycznie rozpoznaje typy danych, normalizuje nazwy (usuwając polskie znaki i znaki specjalne do formatu `snake_case`), wykrywa separator, umożliwia interaktywną korektę schematu (w tym zmianę kolejności kolumn) oraz generuje i zapisuje wynikowy skrypt.
 
