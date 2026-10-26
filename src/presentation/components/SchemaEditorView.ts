@@ -5,7 +5,7 @@ import { IColumnDefinition } from '../../domain/models/ColumnDefinition';
 
 /**
  * Komponent widoku odpowiedzialny za renderowanie dynamicznej tabeli edycji schematu
- * (Schema Editor) w warstwie DOM, umożliwiający korektę nazw kolumn, typów oraz flag NULL.
+ * (Schema Editor) w warstwie DOM, umożliwiający korektę nazw kolumn, typów, flag NULL oraz kolejności.
  */
 export class SchemaEditorView implements ISchemaEditorView {
     private sectionElement: HTMLElement;
@@ -16,6 +16,7 @@ export class SchemaEditorView implements ISchemaEditorView {
     private columnTypeChangedCallback?: (originalName: string, newType: SqlDataType | undefined) => void;
     private columnNullableChangedCallback?: (originalName: string, isNullable: boolean) => void;
     private tableNameChangedCallback?: (newTableName: string) => void;
+    private columnMovedCallback?: (columnName: string, direction: 'up' | 'down') => void;
 
     constructor() {
         const sectionElement = document.getElementById('schema-editor-section') as HTMLElement;
@@ -33,32 +34,24 @@ export class SchemaEditorView implements ISchemaEditorView {
         this.bindTableNameEvent();
     }
 
-    /**
-     * Rejestruje nasłuchiwacz zmiany nazwy kolumny SQL.
-     */
     public onColumnNameChanged(callback: (originalName: string, newName: string) => void): void {
         this.columnNameChangedCallback = callback;
     }
 
-    /**
-     * Rejestruje nasłuchiwacz nadpisania typu danych kolumny.
-     */
     public onColumnTypeChanged(callback: (originalName: string, newType: SqlDataType | undefined) => void): void {
         this.columnTypeChangedCallback = callback;
     }
 
-    /**
-     * Rejestruje nasłuchiwacz zmiany flagi NULL / NOT NULL.
-     */
     public onColumnNullableChanged(callback: (originalName: string, isNullable: boolean) => void): void {
         this.columnNullableChangedCallback = callback;
     }
 
-    /**
-     * Rejestruje nasłuchiwacz zmiany nazwy tabeli docelowej.
-     */
     public onTableNameChanged(callback: (newTableName: string) => void): void {
         this.tableNameChangedCallback = callback;
+    }
+
+    public onColumnMoved(callback: (columnName: string, direction: 'up' | 'down') => void): void {
+        this.columnMovedCallback = callback;
     }
 
     /**
@@ -68,28 +61,25 @@ export class SchemaEditorView implements ISchemaEditorView {
         const schema = state.tableSchema;
         const csvData = state.csvData;
 
-        // Jeśli brak schematu lub danych, ukryj sekcję edycji
         if (!schema || !schema.columns || schema.columns.length === 0) {
             this.sectionElement.classList.add('hidden');
             this.tableBodyElement.innerHTML = '';
             return;
         }
 
-        // Pokaż sekcję edycji schematu
         this.sectionElement.classList.remove('hidden');
 
-        // Synchronizacja nazwy tabeli w inpucie, jeśli różni się od stanu
         if (this.tableNameInput.value !== schema.tableName) {
             this.tableNameInput.value = schema.tableName;
         }
 
-        // Generowanie wierszy tabeli edycji schematu
         this.tableBodyElement.innerHTML = '';
+        const totalColumns = schema.columns.length;
 
         schema.columns.forEach((column: IColumnDefinition, index: number) => {
             const tr = document.createElement('tr');
 
-            // 1. Oryginalna nazwa kolumna (z podglądem pierwszej próbki wartości z CSV)
+            // 1. Oryginalna nazwa kolumny + próbka
             const tdOriginal = document.createElement('td');
             const sampleValue = this.extractSampleValue(csvData?.rows, index);
             tdOriginal.innerHTML = `<strong>${this.escapeHtml(column.originalName)}</strong><br><small style="color: var(--text-muted);">Próbka: ${this.escapeHtml(sampleValue)}</small>`;
@@ -122,13 +112,11 @@ export class SchemaEditorView implements ISchemaEditorView {
             typeSelect.className = 'form-control';
             typeSelect.disabled = state.isLoading;
 
-            // Opcja domyślna (automatyczna)
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
             defaultOption.textContent = `Automatyczny (${column.detectedType})`;
             typeSelect.appendChild(defaultOption);
 
-            // Wypełnienie wszystkimi dostępnymi typami SQL
             Object.values(SqlDataType).forEach((dataType) => {
                 const opt = document.createElement('option');
                 opt.value = dataType;
@@ -170,13 +158,55 @@ export class SchemaEditorView implements ISchemaEditorView {
             tdNullable.appendChild(nullableCheckbox);
             tr.appendChild(tdNullable);
 
+            // 6. Przyciski zmiany kolejności (↑ / ↓)
+            const tdActions = document.createElement('td');
+            tdActions.style.whiteSpace = 'nowrap';
+            tdActions.appendChild(this.renderMoveButtons(column.originalName, index, totalColumns, state.isLoading));
+            tr.appendChild(tdActions);
+
             this.tableBodyElement.appendChild(tr);
         });
     }
 
     /**
-     * Wiąże zdarzenie zmiany nazwy tabeli docelowej w głównym formularzu.
+     * Tworzy kontener z przyciskami do zmiany kolejności kolumny (↑ / ↓).
      */
+    private renderMoveButtons(columnName: string, index: number, totalColumns: number, isLoading: boolean): HTMLElement {
+        const container = document.createElement('div');
+        container.style.display = 'flex';
+        container.style.gap = '4px';
+
+        const upButton = document.createElement('button');
+        upButton.type = 'button';
+        upButton.textContent = '↑';
+        upButton.className = 'btn-secondary';
+        upButton.style.padding = '2px 8px';
+        upButton.disabled = index === 0 || isLoading;
+        upButton.onclick = () => {
+            if (this.columnMovedCallback) {
+                this.columnMovedCallback(columnName, 'up');
+            }
+        };
+
+        const downButton = document.createElement('button');
+        downButton.type = 'button';
+        downButton.textContent = '↓';
+        downButton.className = 'btn-secondary';
+        downButton.style.padding = '2px 8px';
+        upButton.style.padding = '2px 8px';
+        downButton.disabled = index === totalColumns - 1 || isLoading;
+        downButton.onclick = () => {
+            if (this.columnMovedCallback) {
+                this.columnMovedCallback(columnName, 'down');
+            }
+        };
+
+        container.appendChild(upButton);
+        container.appendChild(downButton);
+
+        return container;
+    }
+
     private bindTableNameEvent(): void {
         this.tableNameInput.addEventListener('change', () => {
             if (this.tableNameChangedCallback) {
@@ -185,9 +215,6 @@ export class SchemaEditorView implements ISchemaEditorView {
         });
     }
 
-    /**
-     * Pomocnicza metoda wyciągająca przykładową wartość komórki z wierszy CSV dla danej kolumny.
-     */
     private extractSampleValue(rows: ReadonlyArray<import('../../domain/models/CsvRow').ICsvRow> | undefined, columnIndex: number): string {
         if (!rows || rows.length === 0) {
             return '(brak danych)';
@@ -200,9 +227,6 @@ export class SchemaEditorView implements ISchemaEditorView {
         return '(puste)';
     }
 
-    /**
-     * Bezpieczne kodowanie HTML zapobiegające XSS.
-     */
     private escapeHtml(text: string): string {
         const map: Record<string, string> = {
             '&': '&amp;',

@@ -1,17 +1,16 @@
-import {ITableSchema} from '../domain/models/TableSchema';
-import {IColumnDefinition} from '../domain/models/ColumnDefinition';
-import {SqlDataType} from '../domain/enums/SqlDataType';
-import {INameNormalizationService} from '../domain/contracts/INameNormalizationService';
+import { ITableSchema } from '../domain/models/TableSchema';
+import { IColumnDefinition } from '../domain/models/ColumnDefinition';
+import { SqlDataType } from '../domain/enums/SqlDataType';
+import { INameNormalizationService } from '../domain/contracts/INameNormalizationService';
 
 /**
  * Serwis aplikacyjny odpowiedzialny za obsługę modyfikacji schematu tabeli (Schema Overrides)
- * dokonywanych przez użytkownika (zmiana nazwy kolumny, nadpisanie typu danych oraz flaga NULL/NOT NULL).
+ * dokonywanych przez użytkownika (zmiana nazwy kolumny, nadpisanie typu danych, flaga NULL oraz kolejność).
  */
 export class SchemaOverrideService {
     constructor(
         private readonly normalizationService: INameNormalizationService
-    ) {
-    }
+    ) {}
 
     /**
      * Aktualizuje nazwę kolumny o wskazanym indeksie lub oryginalnej nazwie,
@@ -126,6 +125,48 @@ export class SchemaOverrideService {
         return {
             ...schema,
             tableName: safeTableName
+        };
+    }
+
+    /**
+     * Przesuwa kolumnę w górę lub w dół w schemacie tabeli.
+     * @param schema Aktualny schemat tabeli (ITableSchema)
+     * @param columnName Nazwa kolumny do przesunięcia
+     * @param direction Kierunek ('up' lub 'down')
+     * @returns Nowy, zmodyfikowany ITableSchema z zachowaniem niemutowalności
+     */
+    public moveColumn(
+        schema: ITableSchema,
+        columnName: string,
+        direction: 'up' | 'down'
+    ): ITableSchema {
+        if (!schema || !schema.columns) {
+            throw new Error('Nie podano poprawnego schematu tabeli.');
+        }
+
+        const columns = [...schema.columns];
+        const index = columns.findIndex(col => col.originalName === columnName);
+
+        if (index === -1) {
+            return schema;
+        }
+
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+        // Sprawdzenie granic tabeli
+        if (targetIndex < 0 || targetIndex >= columns.length) {
+            return schema;
+        }
+
+        // Zamiana miejscami (swap)
+        const temp = columns[index];
+        columns[index] = columns[targetIndex];
+        columns[targetIndex] = temp;
+
+        // Zwracamy nowy obiekt schematu z zachowaniem immutability (zgodnie z resztą serwisów)
+        return {
+            ...schema,
+            columns
         };
     }
 }

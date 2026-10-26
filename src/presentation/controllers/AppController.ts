@@ -13,10 +13,6 @@ import { SqlDataType } from '../../domain/enums/SqlDataType';
 /**
  * Główny kontroler aplikacji (AppController) łączący warstwę prezentacji (widoki DOM)
  * z warstwą aplikacji (ConversionUseCase) i infrastruktury (BrowserFileReader).
- * Odpowiada za:
- * - Wiązanie zdarzeń z komponentów widoku do metod use case'a
- * - Zbieranie i wyświetlanie ostrzeżeń walidacyjnych
- * - Zarządzanie stanem użytkownika poprzez updateViews()
  */
 export class AppController {
     private fileReader: BrowserFileReader;
@@ -34,7 +30,6 @@ export class AppController {
 
     /**
      * Wiąże zdarzenia z komponentów widoku do metod kontrolera.
-     * Każdy listener wykonuje logikę use case'a i odświeża widoki.
      */
     private bindEvents(): void {
         // 1. Obsługa wyboru pliku CSV w formularzu wgrania
@@ -43,12 +38,10 @@ export class AppController {
                 const fileContent = await this.fileReader.readFileAsText(file);
                 await this.conversionUseCase.loadAndParseCsv(fileContent, file.name, delimiter);
 
-                // Jeśli użytkownik podał własną nazwę tabeli w formularzu, nadpisujemy ją
                 if (tableName && tableName.trim() !== '') {
                     this.conversionUseCase.updateTableName(tableName.trim());
                 }
 
-                // ← NOWE: Wyciągnięcie ostrzeżeń walidacyjnych ze stanu
                 const currentState = this.conversionUseCase.getState();
                 if (currentState.validationWarnings.length > 0) {
                     this.statusNotificationView.showWarnings(currentState.validationWarnings);
@@ -70,10 +63,7 @@ export class AppController {
         this.schemaEditorView.onTableNameChanged((newTableName: string) => {
             try {
                 this.conversionUseCase.updateTableName(newTableName);
-
-                // ← NOWE: Wyświetlenie ostrzeżeń po zmianie schematu
                 this.displayValidationWarningsIfAny();
-
                 this.updateViews();
             } catch (error: unknown) {
                 const message = error instanceof Error
@@ -87,10 +77,7 @@ export class AppController {
         this.schemaEditorView.onColumnNameChanged((originalName: string, newName: string) => {
             try {
                 this.conversionUseCase.updateColumnName(originalName, newName);
-
-                // ← NOWE: Wyświetlenie ostrzeżeń po zmianie schematu
                 this.displayValidationWarningsIfAny();
-
                 this.updateViews();
             } catch (error: unknown) {
                 const message = error instanceof Error
@@ -104,10 +91,7 @@ export class AppController {
         this.schemaEditorView.onColumnTypeChanged((originalName: string, newType: SqlDataType | undefined) => {
             try {
                 this.conversionUseCase.overrideColumnType(originalName, newType);
-
-                // ← NOWE: Wyświetlenie ostrzeżeń po zmianie schematu
                 this.displayValidationWarningsIfAny();
-
                 this.updateViews();
             } catch (error: unknown) {
                 const message = error instanceof Error
@@ -121,10 +105,7 @@ export class AppController {
         this.schemaEditorView.onColumnNullableChanged((originalName: string, isNullable: boolean) => {
             try {
                 this.conversionUseCase.toggleColumnNullable(originalName, isNullable);
-
-                // ← NOWE: Wyświetlenie ostrzeżeń po zmianie schematu
                 this.displayValidationWarningsIfAny();
-
                 this.updateViews();
             } catch (error: unknown) {
                 const message = error instanceof Error
@@ -134,7 +115,21 @@ export class AppController {
             }
         });
 
-        // 6. Obsługa kliknięcia zapisu wygenerowanego pliku SQL
+        // 6. Obsługa zmiany kolejności kolumn (Przesunięcie w górę / w dół)
+        this.schemaEditorView.onColumnMoved((columnName: string, direction: 'up' | 'down') => {
+            try {
+                this.conversionUseCase.moveColumn(columnName, direction);
+                this.displayValidationWarningsIfAny();
+                this.updateViews();
+            } catch (error: unknown) {
+                const message = error instanceof Error
+                    ? error.message
+                    : 'Błąd podczas zmiany kolejności kolumny.';
+                this.statusNotificationView.showError(message);
+            }
+        });
+
+        // 7. Obsługa kliknięcia zapisu wygenerowanego pliku SQL
         this.statusNotificationView.onSaveFileClicked(async (customFileName?: string) => {
             try {
                 const savedPath = await this.conversionUseCase.saveSqlFile(customFileName);
@@ -152,7 +147,6 @@ export class AppController {
 
     /**
      * Odświeża stan wszystkich widoków na podstawie aktualnego stanu z ConversionUseCase.
-     * Wywoływana po każdej operacji na danych lub schemacie.
      */
     private updateViews(): void {
         const currentState = this.conversionUseCase.getState();

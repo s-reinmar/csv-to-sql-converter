@@ -55,6 +55,12 @@ export interface ISchemaEditorView {
      * Renderuje tabelę edycji schematu na podstawie aktualnego stanu aplikacji.
      */
     render(state: Readonly<IConversionStateData>): void;
+
+    /**
+     * Rejestruje nasłuchiwacz zmiany kolejności kolumn (przesunięcie w górę lub w dół).
+     * @param callback
+     */
+    onColumnMoved(callback: (columnName: string, direction: 'up' | 'down') => void): void;
 }
 
 /**
