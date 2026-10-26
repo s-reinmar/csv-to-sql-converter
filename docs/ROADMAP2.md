@@ -29,7 +29,16 @@ W pierwszej kolejności skupiamy się na stabilności parsowania, precyzji wykry
     - Aktualizacja interfejsu powiadomień (`IStatusNotificationView.ts`), by obok błędu krytycznego móc wyświetlać zbiór ostrzeżeń (warnings) o np. pominiętych wierszach lub wymuszonym zrzutowaniu na `NULL`.
   - **Zależności:** Brak (niezależny serwis domenowy).
 
-## Faza 2: Skalowalność, Wydajność i Asynchroniczność (Przetwarzanie Dużych Danych)
+- [X] **KROK 1.4: Wprowadzenie możliwości zmiany kolejności kolumn**
+- **Powiązanie z Todoist:** *Możliwość zmiany kolejności kolumn w tabeli wynikowej.*
+  - **Cel i DoD:** 
+    - Rozbudowa `TableSchema` o mechanizm przechowywania kolejności kolumn (np. `columnOrder: ReadonlyArray<string>`).
+    - Dodanie metody w `SchemaOverrideService` umożliwiającej zmianę kolejności kolumn.
+    - Aktualizacja widoku `IFileUploadView` o możliwość przeciągania i upuszczania kolumn w celu zmiany ich kolejności.
+  - **Zależności:** Wykonany KROK 1.1 (normalizacja nazw kolumn musi być wykonana przed zmianą kolejności).
+
+
+## Faza 2: Skalowalność, Wydajność i Asynchroniczność (Przetwarzanie Dużych Danych)— *ODRZUCONE / OUT OF SCOPE*
 Przebudowa warstwy aplikacji i infrastruktury w celu obsługi dużych i licznych plików bez blokowania głównego wątku przeglądarki (Headless Architecture / UI Separation).
 
 - [ ] **KROK 2.1: Asynchroniczne przetwarzanie w tle i raportowanie postępu**
@@ -55,7 +64,7 @@ Przebudowa warstwy aplikacji i infrastruktury w celu obsługi dużych i licznych
     - Wymusza pętlę asynchroniczną w `ConversionUseCase`, orkiestrującą wiele plików.
   - **Zależności:** Wykonany KROK 2.1 i KROK 2.2 (System musi być gotowy na współbieżne obciążenie).
 
-## Faza 3: Rozbudowa Domeny SQL i Integracje (Nowe Możliwości)
+## Faza 3: Rozbudowa Domeny SQL i Integracje (Nowe Możliwości)— *ODRZUCONE / OUT OF SCOPE*
 Finalna faza rozszerzająca kompatybilność wygenerowanego kodu SQL z konkretnymi silnikami bazodanowymi oraz zaawansowanymi typami.
 
 - [ ] **KROK 3.1: Rozszerzenie typów danych SQL (JSON, UUID)**

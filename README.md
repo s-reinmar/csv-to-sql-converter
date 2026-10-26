@@ -82,6 +82,8 @@ csv-to-sql-converter/
 
 - [X] KROK 1.1: Automatyczna normalizacja nazw tabel i kolumn
 - [X] KROK 1.2: Automatyczna detekcja separatora pliku CSV
+- [X] KROK 1.3: Rozszerzona walidacja danych wejściowych
+- [X] KROK 1.4: Wprowadzenie możliwości zmiany kolejności kolumn
 
 ---
 
