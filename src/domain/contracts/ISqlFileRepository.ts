@@ -14,4 +14,5 @@ export interface ISqlFileRepository {
      * @returns Obietnica (Promise) zwracająca ścieżkę lub potwierdzenie pomyślnego zapisu.
      */
     saveSqlFile(fileName: string, sqlContent: string): Promise<string>;
+    saveSql(fileName: string, sqlContent: string): Promise<string>;
 }

@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 /**
  * @file main.ts
  * @description Punkt wejścia aplikacji (Composition Root).
@@ -19,6 +21,7 @@ import { SqlDmlBuilder } from './domain/services/SqlDmlBuilder';
 import { SqlGenerator } from './domain/services/SqlGenerator';
 import { SeparatorDetector } from './domain/services/SeparatorDetector';
 import { ApiSqlFileRepository } from './infrastructure/ApiSqlFileRepository';
+import { BrowserSqlFileRepository } from './infrastructure/BrowserSqlFileRepository';
 import { FileUploadView } from './presentation/components/FileUploadView';
 import { SchemaEditorView } from './presentation/components/SchemaEditorView';
 import { StatusNotificationView } from './presentation/components/StatusNotificationView';
@@ -66,7 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // ───────────────────────────────────────────────────────────────
         // 2. Inicjalizacja infrastruktury (I/O i zapis plików)
         // ───────────────────────────────────────────────────────────────
-        const sqlFileRepository = new ApiSqlFileRepository('/api/save-sql');
+        const sqlFileRepository = import.meta.env.DEV
+            ? new ApiSqlFileRepository('./api/save-sql')
+            : new BrowserSqlFileRepository();
 
         // ───────────────────────────────────────────────────────────────
         // 3. Inicjalizacja serwisu aplikacji i przypadków użycia (Headless)

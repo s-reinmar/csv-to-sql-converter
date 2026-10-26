@@ -1,16 +1,21 @@
+/**
+ * @file ApiSqlFileRepository.ts
+ * @description Implementacja interfejsu ISqlFileRepository komunikująca się z lokalnym
+ * endpointem API w celu trwałego zapisu wygenerowanego pliku SQL.
+ */
+
 import { ISqlFileRepository } from '../domain/contracts/ISqlFileRepository';
 
 /**
- * Implementacja interfejsu ISqlFileRepository komunikująca się z lokalnym
- * endpointem API w celu trwałego zapisu wygenerowanego pliku SQL na serwerze / w środowisku Vite.
+ * Repozytorium odpowiedzialne za wysyłanie żądania zapisu pliku SQL do lokalnego middleware Vite.
  */
 export class ApiSqlFileRepository implements ISqlFileRepository {
     private readonly endpointUrl: string;
 
     /**
-     * @param endpointUrl Adres endpointu API odpowiedzialnego za zapis plików (domyślnie '/api/save-sql').
+     * @param endpointUrl Adres endpointu API odpowiedzialnego za zapis plików (domyślnie './api/save-sql' lub '/api/save-sql').
      */
-    constructor(endpointUrl: string = '/api/save-sql') {
+    constructor(endpointUrl: string = './api/save-sql') {
         this.endpointUrl = endpointUrl;
     }
 
@@ -19,7 +24,7 @@ export class ApiSqlFileRepository implements ISqlFileRepository {
      *
      * @param fileName Nazwa pliku docelowego (np. 'users.sql').
      * @param sqlContent Treść skryptu SQL do zapisu.
-     * @returns Promise zwracający ścieżkę lub komunikat o pomyślnym zapisie zwrócony przez serwer.
+     * @returns Ścieżka do zapisanego pliku lub komunikat o sukcesie.
      */
     public async saveSqlFile(fileName: string, sqlContent: string): Promise<string> {
         if (!fileName || fileName.trim() === '') {
@@ -56,5 +61,9 @@ export class ApiSqlFileRepository implements ISqlFileRepository {
             }
             throw new Error('Wystąpił nieznany błąd podczas komunikacji z serwerem zapisu plików.');
         }
+    }
+
+    public saveSql(fileName: string, sqlContent: string): Promise<string> {
+        return this.saveSqlFile(fileName, sqlContent);
     }
 }

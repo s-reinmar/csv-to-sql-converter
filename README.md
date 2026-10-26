@@ -1,23 +1,66 @@
-# CSV to SQL Converter (TypeScript) - v1.1.0
+# 🚀 CSV to SQL Converter (TypeScript) - v1.1.0
 
-Aplikacja webowa w języku **TypeScript** służąca do konwersji plików wsadowych **CSV** do formatu SQL (`CREATE TABLE` + `INSERT INTO`). Narzędzie automatycznie rozpoznaje typy danych na podstawie zawartości kolumn, normalizuje nazwy (usuwając polskie znaki i znaki specjalne do formatu `snake_case`), wykrywa separator, umożliwia interaktywną korektę schematu (w tym zmianę kolejności kolumn) oraz zapisuje wynikowy skrypt bezpośrednio w katalogu `public/resources/`.
+![Opis grafiki](public/pwa-512x512.png)
+
+Zaawansowana, lekka aplikacja webowa napisana w czystym **TypeScript**, służąca do konwersji plików wsadowych **CSV** do formatu SQL (`CREATE TABLE` + `INSERT INTO`). Narzędzie automatycznie rozpoznaje typy danych, normalizuje nazwy (usuwając polskie znaki i znaki specjalne do formatu `snake_case`), wykrywa separator, umożliwia interaktywną korektę schematu (w tym zmianę kolejności kolumn) oraz generuje i zapisuje wynikowy skrypt.
 
 Projekt został zrealizowany z zachowaniem rygorystycznych standardów inżynieryjnych: wzorców **Clean Architecture**, **Domain-Driven Design (DDD)** oraz zasad **SOLID**.
 
 ---
 
-## 🏗️ Założenia Architektoniczne
-Projekt realizuje następujące założenia projektowe:
-* **Headless Architecture:** Całkowite odseparowanie logiki domenowej i aplikacyjnej od warstwy widoku HTML DOM.
-* **Strict TypeScript:** Rygorystyczne typowanie (`strict: true`, `noImplicitAny: true`, `strictNullChecks: true`, całkowity zakaz używania typu `any`).
-* **Interface-Driven Development (DIP):** Komunikacja pomiędzy warstwami odbywa się wyłącznie za pośrednictwem jawnych kontraktów (interfejsów).
-* **Niskie SLOC i SRP:** Podział logiki na małe, atomowe klasy i metody o pojedynczej odpowiedzialności.
-* **Ciemny motyw graficzny:** Interfejs użytkownika w kolorystyce czarno-niebieskiej z jasnoniebieskimi akcentami, zapewniający komfort pracy w warunkach słabego oświetlenia.
+## 🌐 Linki do aplikacji i wersji
+
+* **Aplikacja na żywo (Netlify, v.1.1.0):** [https://dazzling-pothos-00b6ea.netlify.app/](https://dazzling-pothos-00b6ea.netlify.app/)
+* **Wersja stabilna (GitHub Pages - v1.1.0):** [https://s-reinmar.github.io/csv-to-sql-converter/](https://s-reinmar.github.io/csv-to-sql-converter/)
+* **Paczki dystrybucyjne (.zip z katalogu `dist/`):** [GitHub Releases (v1.1.0)](https://github.com/s-reinmar/csv-to-sql-converter/releases)
 
 ---
 
-## 📁 Struktura Katalogów (WebStorm)
-Struktura projektu zorganizowana zgodnie z Clean Architecture:
+## ✨ Główne funkcje i Usprawnienia (v1.1.0)
+
+* **Headless Architecture:** Całkowite odseparowanie logiki domenowej i aplikacyjnej od warstwy widoku HTML DOM.
+* **Strict TypeScript:** Rygorystyczne typowanie (`strict: true`, brak typu `any`).
+* **Automatyczna normalizacja:** Usuwanie polskich znaków i znaków specjalnych do formatu `snake_case` dla nazw tabel i kolumn.
+* **Inteligentna detekcja:** Automatyczne wykrywanie separatora pliku CSV na podstawie heurystyki pierwszej próbki.
+* **Edytor schematu:** Dynamiczna zmiana typów, wartości NULL oraz zmiana kolejności kolumn (↑ / ↓) z natychmiastową regeneracją kodu SQL.
+* **Ciemny motyw:** Nowoczesny i czytelny interfejs w kolorystyce czarno-niebieskiej.
+
+---
+
+## 💻 Instrukcja Uruchomienia i Budowania
+
+### 1. Wymagania wstępne
+Upewnij się, że masz zainstalowane środowisko **Node.js** (zalecana wersja LTS) oraz menedżer pakietów **npm**.
+
+### 2. Uruchomienie lokalne w trybie deweloperskim (Dev)
+Aby uruchomić projekt lokalnie na swoim komputerze w celach testowych lub rozwojowych:
+
+```bash
+# 1. Sklonuj repozytorium
+git clone https://github.com/s-reinmar/csv-to-sql-converter.git
+cd csv-to-sql-converter
+
+# 2. Zainstaluj wymagane zależności
+npm install
+
+# 3. Uruchom serwer deweloperski Vite
+npm run dev
+```
+Aplikacja zostanie uruchomiona lokalnie (zazwyczaj pod adresem `http://localhost:5173` lub innym wskazanym w terminalu).
+
+### 3. Budowanie wersji produkcyjnej (Build)
+Aby wygenerować skompilowaną i zoptymalizowaną paczkę produkcyjną do wdrożenia (folder `dist/`):
+
+```bash
+npm run build
+```
+Skompilowane pliki statyczne znajdziesz w folderze `dist/`. Możesz je wgrać bezpośrednio na dowolny hosting statyczny lub spakować do archiwum `.zip` i opublikować w sekcji [Releases](https://github.com/s-reinmar/csv-to-sql-converter/releases).
+
+---
+
+## 📁 Struktura Katalogów (Clean Architecture)
+
+Struktura projektu w WebStorm zorganizowana zgodnie z Clean Architecture:
 ```text
 csv-to-sql-converter/
 ├── package.json
@@ -26,26 +69,24 @@ csv-to-sql-converter/
 ├── index.html
 ├── README.md
 ├── public/
-│   └── resources/                  # Docelowy katalog zapisu wygenerowanych plików .sql
+│   └── resources/                  # Katalog zasobów i plików testowych
 │       ├── .gitkeep
 │       └── sample.csv              # Testowy plik wsadowy CSV
 └── src/
     ├── main.ts                     # Punkt wejścia i Composition Root (DI)
-    ├── domain/                     # Czysta logika biznesowa (Zero wiedzy o UI / I/O)
+    ├── domain/                     # Czysta logika biznesowa (Zero zależności od UI / I/O)
     │   ├── enums/
     │   ├── models/
     │   ├── contracts/              # Interfejsy domenowe (DIP)
-    │   └── services/               # Parsowanie, normalizacja, wnioskowanie typów i generowanie SQL
-    ├── infrastructure/             # Operacje wejścia/wyjścia (I/O) i zapis plików
-    ├── application/                # Przypadki użycia, zarządzanie stanem i modyfikacje schematu
+    │   └── services/               # Parsowanie, normalizacja, typowanie i SQL generator
+    ├── infrastructure/             # Operacje I/O i odczyt/zapis plików
+    ├── application/                # Przypadki użycia i zarządzanie stanem
     └── presentation/               # Warstwa widoku (DOM) i stylizacja
         ├── styles/
         ├── contracts/
         ├── components/             # FileUploadView, SchemaEditorView, StatusNotificationView
         └── controllers/            # AppController
 ```
-
----
 
 ## Status Realizacji Projektu - radmap v1.0.0 - zakończone
 
@@ -76,17 +117,10 @@ csv-to-sql-converter/
 - [X] KROK 1.2: Automatyczna detekcja separatora pliku CSV na podstawie heurystyki pierwszej próbki.
 - [X] KROK 1.3: Rozszerzona walidacja danych wejściowych i prezentacja ostrzeżeń (warnings).
 - [X] KROK 1.4: Dynamiczna zmiana kolejności kolumn w edytorze schematu (↑ / ↓) z natychmiastową regeneracją kodu SQL.
+- [X] KROK 1.5: Usprawnienia w ustawieniach wersji build PWA (vite.config.ts), niektórych plików.
 
 ---
 
-## Uruchomienie projektu (MVP)
+## 👤 Autor
 
-1. Zainstaluj zależności:
-   ```bash
-   npm install
-   ```
-2. Uruchom serwer deweloperski:
-   ```bash
-   npm run dev
-   ```
-3. Otwórz aplikację w przeglądarce pod wskazanym adresem (np. `http://localhost:3000`).
+* **s-reinmar** - [GitHub Profile](https://github.com/s-reinmar)

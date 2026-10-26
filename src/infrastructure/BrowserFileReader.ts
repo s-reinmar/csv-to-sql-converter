@@ -1,15 +1,7 @@
 /**
- * Adapter opakowujący natywne API przeglądarki FileReader w bezpieczny, otypowany Promise<string>,
- * służący do odczytu zawartości plików tekstowych oraz CSV w warstwie infrastruktury.
+ * Adapter opakowujący natywne API przeglądarki FileReader w bezpieczny, otypowany Promise<string>.
  */
 export class BrowserFileReader {
-    /**
-     * Wczytuje zawartość przekazanego pliku jako tekst.
-     *
-     * @param file Obiekt pliku (File) pobrany z elementu input[type="file"] lub operacji Drag & Drop.
-     * @param encoding Kodowanie znaków (domyślnie 'utf-8').
-     * @returns Promise zwracający treść pliku w formacie string.
-     */
     public readFileAsText(file: File, encoding: string = 'utf-8'): Promise<string> {
         return new Promise((resolve, reject) => {
             if (!file) {
