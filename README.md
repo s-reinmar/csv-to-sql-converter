@@ -4,21 +4,32 @@
   <img src="public/convert-csv-to-sql.jpg" alt="PWA Preview">
 </p>
 
-Zaawansowana, lekka aplikacja webowa napisana w czystym **TypeScript**, służąca do konwersji plików wsadowych **CSV** do formatu SQL (`CREATE TABLE` + `INSERT INTO`). Narzędzie automatycznie rozpoznaje typy danych, normalizuje nazwy (usuwając polskie znaki i znaki specjalne do formatu `snake_case`), wykrywa separator, umożliwia interaktywną korektę schematu (w tym zmianę kolejności kolumn) oraz generuje i zapisuje wynikowy skrypt.
+Lekka aplikacja webowa w czystym TypeScript do konwersji plików CSV na gotowe skrypty SQL (CREATE TABLE + INSERT INTO).
 
-Projekt został zrealizowany z zachowaniem rygorystycznych standardów inżynieryjnych: wzorców **Clean Architecture**, **Domain-Driven Design (DDD)** oraz zasad **SOLID**.
+Główne możliwości:
+
+- Automatyczna detekcja separatora oraz odgadywanie typów danych.
+
+- Normalizacja nazewnictwa: pliki do lowerCamelCase, kolumny do bezpiecznego snake_case (oczyszczanie z polskich znaków i znaków specjalnych).
+
+- Interaktywny edytor schematu przed eksportem (zmiana typów, nazw oraz kolejności kolumn).
+
+- Generowanie i bezpośredni eksport wynikowego pliku .sql.
+
+Kod zorganizowany modułowo według zasad Clean Architecture i reguł SOLID. Warstwa logiki domenowej jest w trakcie pokrywania testami jednostkowymi.
+
 
 ---
 
 ## 🌐 Linki do aplikacji i wersji
 
-* **Aplikacja na żywo (Netlify, v.1.1.1):** [https://dazzling-pothos-00b6ea.netlify.app/](https://dazzling-pothos-00b6ea.netlify.app/)
-* **Wersja stabilna (GitHub Pages - v1.1.1):** [https://s-reinmar.github.io/csv-to-sql-converter/](https://s-reinmar.github.io/csv-to-sql-converter/)
-* **Paczki dystrybucyjne (.zip z katalogu `dist/`):** [GitHub Releases (v1.1.1)](https://github.com/s-reinmar/csv-to-sql-converter/releases/download/app-fix/converter.zip)
+* **Aplikacja na żywo (Netlify, v.1.1.2):** [https://dazzling-pothos-00b6ea.netlify.app/](https://dazzling-pothos-00b6ea.netlify.app/)
+* **Wersja stabilna (GitHub Pages - v1.1.2):** [https://s-reinmar.github.io/csv-to-sql-converter/](https://s-reinmar.github.io/csv-to-sql-converter/)
+* **Paczki dystrybucyjne (.zip z katalogu `dist/`):** [GitHub Releases (v1.1.2)] (https://github.com/s-reinmar/csv-to-sql-converter/releases/tag/app)
 
 ---
 
-## ✨ Główne funkcje i Usprawnienia (v1.1.1)
+## ✨ Główne funkcje i Usprawnienia
 
 * **Headless Architecture:** Całkowite odseparowanie logiki domenowej i aplikacyjnej od warstwy widoku HTML DOM.
 * **Strict TypeScript:** Rygorystyczne typowanie (`strict: true`, brak typu `any`).
@@ -58,6 +69,21 @@ npm run build
 ```
 Skompilowane pliki statyczne znajdziesz w folderze `dist/`. Możesz je wgrać bezpośrednio na dowolny hosting statyczny lub spakować do archiwum `.zip` i opublikować w sekcji [Releases](https://github.com/s-reinmar/csv-to-sql-converter/releases).
 
+### 4. Testy jednostkowe
+Testy jednostkowe są napisane z użyciem **Vitest** i sprawdzają logikę domenową niezależnie od interfejsu użytkownika. Aby uruchomić testy w trybie obserwowania zmian:
+
+```bash
+npx vitest
+```
+
+Vitest domyślnie wyszukuje pliki `*.test.*` i `*.spec.*` w projekcie. Aby uruchomić testy jednorazowo, bez trybu obserwowania, użyj:
+
+```bash
+npx vitest run
+```
+
+Aktualny zestaw testów znajduje się w `test/domain/NameNormalizationService.spec.ts`. Testuje on serwis `NameNormalizationService`, w tym normalizację polskich znaków, tworzenie nazw kolumn w formacie `snake_case`, tworzenie nazw tabel w formacie `lowerCamelCase`, obsługę znaków specjalnych oraz wartości domyślne dla pustych nazw. Każdy test tworzy nową instancję serwisu przez `beforeEach`, a wyniki są weryfikowane asercjami Vitest (`describe`, `it`, `expect`).
+
 ---
 
 ## 📁 Struktura Katalogów (Clean Architecture)
@@ -71,23 +97,24 @@ csv-to-sql-converter/
 ├── index.html
 ├── README.md
 ├── public/
-│   └── resources/                  # Katalog zasobów i plików testowych
-│       ├── .gitkeep
-│       └── sample.csv              # Testowy plik wsadowy CSV
-└── src/
-    ├── main.ts                     # Punkt wejścia i Composition Root (DI)
-    ├── domain/                     # Czysta logika biznesowa (Zero zależności od UI / I/O)
-    │   ├── enums/
-    │   ├── models/
-    │   ├── contracts/              # Interfejsy domenowe (DIP)
-    │   └── services/               # Parsowanie, normalizacja, typowanie i SQL generator
-    ├── infrastructure/             # Operacje I/O i odczyt/zapis plików
-    ├── application/                # Przypadki użycia i zarządzanie stanem
-    └── presentation/               # Warstwa widoku (DOM) i stylizacja
-        ├── styles/
-        ├── contracts/
-        ├── components/             # FileUploadView, SchemaEditorView, StatusNotificationView
-        └── controllers/            # AppController
+│   └── resources/                  # Zasoby i przykładowe pliki CSV
+│       └── sample.csv
+├── src/                            # Kod aplikacji
+│   ├── application/                # Przypadki użycia i zarządzanie stanem
+│   ├── domain/                     # Logika biznesowa niezależna od UI i I/O
+│   │   ├── contracts/              # Interfejsy domenowe (DIP)
+│   │   ├── enums/
+│   │   ├── models/
+│   │   └── services/               # Parsowanie, normalizacja, typowanie i SQL
+│   ├── infrastructure/             # Operacje I/O i obsługa plików
+│   ├── main.ts                     # Punkt wejścia i Composition Root (DI)
+│   └── presentation/               # Widok (DOM) i stylizacja
+│       ├── components/
+│       ├── contracts/
+│       ├── controllers/
+│       └── styles/
+└── test/                           # Testy jednostkowe
+    └── domain/                     # Testy logiki domenowej
 ```
 
 ## Status Realizacji Projektu - radmap v1.0.0 - zakończone
