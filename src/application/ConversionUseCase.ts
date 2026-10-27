@@ -1,9 +1,3 @@
-/**
- * @file ConversionUseCase.ts
- * @description Główny orkiestrator przepływu pracy dla konwersji CSV do SQL,
- * z pełną integracją walidacji danych, zbieraniem ostrzeżeń oraz obsługą modyfikacji schematu.
- */
-
 import { ICsvParser } from '../domain/contracts/ICsvParser';
 import { ITypeInferenceEngine } from '../domain/contracts/ITypeInferenceEngine';
 import { ISqlGenerator } from '../domain/contracts/ISqlGenerator';
@@ -14,14 +8,12 @@ import { SqlDataType } from '../domain/enums/SqlDataType';
 import { ISeparatorDetector } from '../domain/contracts/ISeparatorDetector';
 import { IDataValidator } from '../domain/contracts/IDataValidator';
 import { ITableSchema } from '../domain/models/TableSchema';
+import { INameNormalizationService } from '../domain/contracts/INameNormalizationService';
+import { NameNormalizationService } from '../domain/services/NameNormalizationService';
 
-/**
- * Główny orkiestrator przepływu pracy (Use Case) dla konwersji CSV do SQL.
- * Koordynuje wczytywanie pliku, wnioskowanie typów, modyfikacje schematu (w tym zmianę kolejności kolumn),
- * walidację danych, generowanie kodu SQL oraz jego trwały zapis.
- */
 export class ConversionUseCase {
     private currentState: ConversionState;
+    private readonly nameNormalizationService: INameNormalizationService;
 
     constructor(
         private readonly csvParser: ICsvParser,
@@ -30,22 +22,18 @@ export class ConversionUseCase {
         private readonly sqlFileRepository: ISqlFileRepository,
         private readonly schemaOverrideService: SchemaOverrideService,
         private readonly separatorDetector: ISeparatorDetector,
-        private readonly dataValidator: IDataValidator
+        private readonly dataValidator: IDataValidator,
+        nameNormalizationService?: INameNormalizationService // Opcjonalny parametr
     ) {
         this.currentState = new ConversionState();
+        // Jeśli nie został przekazany z zewnątrz, tworzymy instancję domyślną
+        this.nameNormalizationService = nameNormalizationService ?? new NameNormalizationService();
     }
 
-    /**
-     * Zwraca aktualny stan aplikacji.
-     */
     public getState(): Readonly<IConversionStateData> {
         return this.currentState.getState();
     }
 
-    /**
-     * Wczytuje i sparsuje zawartość pliku CSV, uruchamia detekcję typów, wykonuje walidację danych,
-     * generuje kod SQL i zbiera ostrzeżenia walidacyjne w trakcie procesu.
-     */
     public async loadAndParseCsv(
         fileContent: string,
         fileName: string,
@@ -102,9 +90,6 @@ export class ConversionUseCase {
         }
     }
 
-    /**
-     * Zmienia nazwę SQL wybranej kolumny i odświeża podgląd SQL.
-     */
     public updateColumnName(targetOriginalName: string, newSqlName: string): Readonly<IConversionStateData> {
         const schema = this.currentState.getState().tableSchema;
         if (!schema) {
@@ -120,9 +105,6 @@ export class ConversionUseCase {
         return this.refreshSchemaAndSqlWithValidation(updatedSchema);
     }
 
-    /**
-     * Nadpisuje typ danych kolumny.
-     */
     public overrideColumnType(
         targetOriginalName: string,
         newDataType: SqlDataType | undefined
@@ -141,9 +123,6 @@ export class ConversionUseCase {
         return this.refreshSchemaAndSqlWithValidation(updatedSchema);
     }
 
-    /**
-     * Przełącza flagę NULL / NOT NULL dla kolumny.
-     */
     public toggleColumnNullable(
         targetOriginalName: string,
         isNullable: boolean
@@ -162,9 +141,6 @@ export class ConversionUseCase {
         return this.refreshSchemaAndSqlWithValidation(updatedSchema);
     }
 
-    /**
-     * Zmienia główną nazwę tabeli docelowej.
-     */
     public updateTableName(newTableName: string): Readonly<IConversionStateData> {
         const schema = this.currentState.getState().tableSchema;
         if (!schema) {
@@ -176,9 +152,6 @@ export class ConversionUseCase {
         return this.refreshSchemaAndSqlWithValidation(updatedSchema);
     }
 
-    /**
-     * Przesuwa kolumnę w górę lub w dół w schemacie tabeli.
-     */
     public moveColumn(columnName: string, direction: 'up' | 'down'): Readonly<IConversionStateData> {
         const schema = this.currentState.getState().tableSchema;
         if (!schema) {
@@ -194,9 +167,6 @@ export class ConversionUseCase {
         return this.refreshSchemaAndSqlWithValidation(updatedSchema);
     }
 
-    /**
-     * Zleca zapis wygenerowanego kodu SQL na dysk.
-     */
     public async saveSqlFile(customFileName?: string): Promise<string> {
         const state = this.currentState.getState();
         if (!state.generatedSql || !state.tableSchema) {
@@ -239,9 +209,6 @@ export class ConversionUseCase {
         }
     }
 
-    /**
-     * Pomocnicza metoda aktualizująca schemat, regenerująca SQL oraz przeprowadzająca walidację.
-     */
     private refreshSchemaAndSqlWithValidation(updatedSchema: ITableSchema): Readonly<IConversionStateData> {
         const csvData = this.currentState.getState().csvData;
         let generatedSql = this.currentState.getState().generatedSql;
@@ -261,14 +228,7 @@ export class ConversionUseCase {
         return this.currentState.getState();
     }
 
-    /**
-     * Wyciąga domyślną nazwę tabeli z nazwy pliku CSV.
-     */
     private extractTableNameFromFileName(fileName: string): string {
-        const cleanName = fileName.replace(/\.[^/.]+$/, '');
-        return cleanName
-            .toLowerCase()
-            .replace(/[^a-z0-9_]/g, '_')
-            .replace(/^_+|_+$/g, '') || 'imported_data';
+        return this.nameNormalizationService.normalizeTableName(fileName);
     }
 }
