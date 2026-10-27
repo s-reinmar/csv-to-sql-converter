@@ -1,0 +1,7 @@
+id,product_name,quantity,unit_price,is_active,created_date,description
+1,"Laptop ""Pro"" 15"", Gaming Edition",5,4599.99,true,2025-01-15,"Wydajny laptop dla profesjonalistów, z systemem i gwarancją."
+2,"Mysz bezprzewodowa, ergonomiczna",25,129.50,1,2025-02-10,"Akcesoria biurowe, kolor czarny/szary."
+3,"Kabel HDMI 2.0 (2m)",100,45.00,yes,2025-03-01,"Wysokiej jakości przewód 4K @ 60Hz."
+4,"Monitor LED 27",12,1299.00,FALSE,2025-03-05,"Zakrzywiony ekran, matryca IPS."
+5,"Podkładka pod mysz RGB",50,59.90,0,2025-03-12,"Podświetlenie LED USB, antypoślizgowa."
+6,"Klawiatura mechaniczna ""RGB""",NULL,349.99,TRUE,2025-03-20,"Przełączniki mechaniczne Blue, wersja PL."
