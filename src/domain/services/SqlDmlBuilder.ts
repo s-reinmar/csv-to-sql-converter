@@ -1,6 +1,6 @@
-import {ITableSchema} from '../models/TableSchema';
-import {ICsvRow} from '../models/CsvRow';
-import {SqlValueEscaper} from './SqlValueEscaper';
+import { ITableSchema } from '../models/TableSchema';
+import { ICsvRow } from '../models/CsvRow';
+import { SqlValueEscaper } from './SqlValueEscaper';
 
 /**
  * Serwis odpowiedzialny za budowanie instrukcji DML (INSERT INTO) na podstawie
@@ -38,8 +38,10 @@ export class SqlDmlBuilder {
         for (let i = 0; i < rows.length; i += batchSize) {
             const batchRows = rows.slice(i, i + batchSize);
             const valueClauses = batchRows.map(row => {
-                const values = schema.columns.map((col, columnIndex) => {
-                    const cellValue = row.cells[columnIndex]?.rawValue ?? '';
+                const values = schema.columns.map(col => {
+                    // Pobieramy wartość bezpośrednio po oryginalnej nazwie kolumny ze słownika wiersza CSV,
+                    // dzięki czemu operacja moveColumn (zmiana kolejności) poprawnie przestawia dane w INSERT!
+                    const cellValue = row.values[col.originalName] ?? '';
                     const dataType = col.userOverrideType ?? col.detectedType;
                     return this.valueEscaper.escapeValue(cellValue, dataType);
                 });

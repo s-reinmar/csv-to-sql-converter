@@ -79,9 +79,9 @@ export class SchemaEditorView implements ISchemaEditorView {
         schema.columns.forEach((column: IColumnDefinition, index: number) => {
             const tr = document.createElement('tr');
 
-            // 1. Oryginalna nazwa kolumny + próbka
+            // 1. Oryginalna nazwa kolumny + próbka (wyszukiwanie po originalName w headers, odporne na moveColumn)
             const tdOriginal = document.createElement('td');
-            const sampleValue = this.extractSampleValue(csvData?.rows, index);
+            const sampleValue = this.extractSampleValueByOriginalName(csvData?.rows, csvData?.headers, column.originalName);
             tdOriginal.innerHTML = `<strong>${this.escapeHtml(column.originalName)}</strong><br><small style="color: var(--text-muted);">Próbka: ${this.escapeHtml(sampleValue)}</small>`;
             tr.appendChild(tdOriginal);
 
@@ -193,7 +193,6 @@ export class SchemaEditorView implements ISchemaEditorView {
         downButton.textContent = '↓';
         downButton.className = 'btn-secondary';
         downButton.style.padding = '2px 8px';
-        upButton.style.padding = '2px 8px';
         downButton.disabled = index === totalColumns - 1 || isLoading;
         downButton.onclick = () => {
             if (this.columnMovedCallback) {
@@ -215,9 +214,17 @@ export class SchemaEditorView implements ISchemaEditorView {
         });
     }
 
-    private extractSampleValue(rows: ReadonlyArray<import('../../domain/models/CsvRow').ICsvRow> | undefined, columnIndex: number): string {
-        if (!rows || rows.length === 0) {
+    private extractSampleValueByOriginalName(
+        rows: ReadonlyArray<import('../../domain/models/CsvRow').ICsvRow> | undefined,
+        headers: ReadonlyArray<string> | undefined,
+        originalName: string
+    ): string {
+        if (!rows || rows.length === 0 || !headers) {
             return '(brak danych)';
+        }
+        const columnIndex = headers.indexOf(originalName);
+        if (columnIndex === -1) {
+            return '(puste)';
         }
         const firstRow = rows[0];
         if (firstRow && firstRow.cells && firstRow.cells[columnIndex]) {
