@@ -12,13 +12,13 @@ Projekt został zrealizowany z zachowaniem rygorystycznych standardów inżynier
 
 ## 🌐 Linki do aplikacji i wersji
 
-* **Aplikacja na żywo (Netlify, v.1.1.0):** [https://dazzling-pothos-00b6ea.netlify.app/](https://dazzling-pothos-00b6ea.netlify.app/)
-* **Wersja stabilna (GitHub Pages - v1.1.0):** [https://s-reinmar.github.io/csv-to-sql-converter/](https://s-reinmar.github.io/csv-to-sql-converter/)
-* **Paczki dystrybucyjne (.zip z katalogu `dist/`):** [GitHub Releases (v1.1.0)](https://github.com/s-reinmar/csv-to-sql-converter/releases)
+* **Aplikacja na żywo (Netlify, v.1.1.1):** [https://dazzling-pothos-00b6ea.netlify.app/](https://dazzling-pothos-00b6ea.netlify.app/)
+* **Wersja stabilna (GitHub Pages - v1.1.1):** [https://s-reinmar.github.io/csv-to-sql-converter/](https://s-reinmar.github.io/csv-to-sql-converter/)
+* **Paczki dystrybucyjne (.zip z katalogu `dist/`):** [GitHub Releases (v1.1.1)](https://github.com/s-reinmar/csv-to-sql-converter/releases/download/app-fix/converter.zip)
 
 ---
 
-## ✨ Główne funkcje i Usprawnienia (v1.1.0)
+## ✨ Główne funkcje i Usprawnienia (v1.1.1)
 
 * **Headless Architecture:** Całkowite odseparowanie logiki domenowej i aplikacyjnej od warstwy widoku HTML DOM.
 * **Strict TypeScript:** Rygorystyczne typowanie (`strict: true`, brak typu `any`).
